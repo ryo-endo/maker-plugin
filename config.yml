@@ -1,0 +1,11 @@
+name: Maker
+event: Maker
+code: Maker
+version: 1.0.1
+service: 
+    - MakerServiceProvider
+orm.path:
+    - /Resource/doctrine
+#form:
+#    onSetData:
+#        Form\Type\PaymentFragmentForm

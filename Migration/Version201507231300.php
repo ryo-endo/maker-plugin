@@ -42,21 +42,6 @@ class Version201507231300 extends AbstractMigration
         $schema->dropTable('plg_product_maker');
     }
 
-    public function postUp(Schema $schema)
-    {
-
-        $app = new \Eccube\Application();
-        $app->boot();
-        $pluginCode = 'Maker';
-        $pluginName = 'メーカー管理';
-        $datetime = date('Y-m-d H:i:s');
-        $insert = "INSERT INTO plg_maker_plugin(
-                            plugin_code, plugin_name, create_date, update_date)
-                    VALUES ('$pluginCode', '$pluginName', '$datetime', '$datetime'
-                            );";
-        $this->connection->executeUpdate($insert);
-    }
-
     protected function createPlgMakerPlugin(Schema $schema)
     {
         $table = $schema->createTable("plg_maker_plugin");

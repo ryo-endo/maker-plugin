@@ -87,7 +87,7 @@ class Maker
         );
         
         // form1の最終項目に追加(レイアウトに依存（時間無いのでベタ）)
-        $html  = $crawler->html();
+        $html  = $this->getHtmlFromCrawler($crawler);
         
         try {
         	// ※商品編集画面 idなりclassなりがきちんとつかないとDOMをいじるのは難しい
@@ -163,7 +163,7 @@ class Maker
 
 		// HTMLを取得し、DOM化
         $crawler = new Crawler($response->getContent());
-        $html  = $crawler->html();
+        $html  = $this->getHtmlFromCrawler($crawler);
         
 		if ($ProductMaker) {
 	        $parts = $this->app->renderView(
@@ -187,5 +187,21 @@ class Maker
         $response->setContent($html);
         $event->setResponse($response);
     }
+
+	/**
+	 * 解析用HTMLを取得
+	 *
+	 * @param Crawler $crawler
+	 * @return string
+	 */
+	private function getHtmlFromCrawler(Crawler $crawler)
+	{
+	    $html = '';
+	    foreach ($crawler as $domElement) {
+	        $domElement->ownerDocument->formatOutput = true;
+	        $html .= $domElement->ownerDocument->saveHTML();
+	    }
+	    return html_entity_decode($html, ENT_NOQUOTES, 'UTF-8');
+	}
 
 }

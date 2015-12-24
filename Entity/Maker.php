@@ -13,13 +13,6 @@ namespace Plugin\Maker\Entity;
 
 class Maker extends \Eccube\Entity\AbstractEntity
 {
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getMethod();
-    }
 
     /**
      * @var integer

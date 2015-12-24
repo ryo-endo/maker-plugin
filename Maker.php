@@ -28,6 +28,10 @@ class Maker
     public function onRenderAdminProductNewBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
+        if (!$this->app->isGranted('ROLE_ADMIN')) {
+            return;
+        }
+
         $request = $event->getRequest();
         $response = $event->getResponse();
         $id = $request->attributes->get('id');
@@ -53,17 +57,25 @@ class Maker
                 // 登録
                 $data = $form->getData();
 
-                $ProductMaker = new \Plugin\Maker\Entity\ProductMaker();
+                $Makers = $this->app['eccube.plugin.maker.repository.maker']->findAll();
 
-                $ProductMaker
-                    ->setId($id)
-                    ->setMakerUrl($data['maker_url'])
-                    ->setDelFlg(Constant::DISABLED)
-                    ->setMaker($data['maker']);
+                $Maker = $form->get('maker')->getData();
+                $makerUrl = $form->get('maker_url')->getData();
 
-                $app['orm.em']->persist($ProductMaker);
+                if (count($Makers) > 0 && !empty($Maker)) {
 
-                 $app['orm.em']->flush($ProductMaker);
+                    $ProductMaker = new \Plugin\Maker\Entity\ProductMaker();
+
+                    $ProductMaker
+                        ->setId($id)
+                        ->setMakerUrl($makerUrl)
+                        ->setDelFlg(Constant::DISABLED)
+                        ->setMaker($Maker);
+
+                    $app['orm.em']->persist($ProductMaker);
+
+                    $app['orm.em']->flush($ProductMaker);
+                }
             }
         }
 
@@ -73,6 +85,10 @@ class Maker
     public function onRenderAdminProductEditBefore(FilterResponseEvent $event)
     {
         $app = $this->app;
+        if (!$app->isGranted('ROLE_ADMIN')) {
+            return;
+        }
+
         $request = $event->getRequest();
         $response = $event->getResponse();
         $id = $request->attributes->get('id');
@@ -87,10 +103,14 @@ class Maker
     public function onAdminProductEditAfter()
     {
         $app = $this->app;
+        if (!$app->isGranted('ROLE_ADMIN')) {
+            return;
+        }
+
         $id = $app['request']->attributes->get('id');
 
         $form = $app['form.factory']
-            ->createBuilder('admin_product_maker')
+            ->createBuilder('admin_product')
             ->getForm();
 
         $ProductMaker = $app['eccube.plugin.maker.repository.product_maker']->find($id);
@@ -104,28 +124,32 @@ class Maker
         $form->handleRequest($app['request']);
 
         if ('POST' === $app['request']->getMethod()) {
-            $maker_id = $form->get('maker')->getData();
-            if ($maker_id) {
-                // 登録・更新
-                $Maker = $app['eccube.plugin.maker.repository.maker']->find($maker_id);
-                // ※setIdはなんだか違う気がする
-                if ($id) {
-                    $ProductMaker->setId($id);
-                }
 
-                $ProductMaker
-                    ->setMakerUrl($form->get('maker_url')->getData())
-                    ->setDelFlg(0)
-                    ->setMaker($Maker);
-                $app['orm.em']->persist($ProductMaker);
-            } else {
+            if ($form->isValid()) {
+
+                $maker_id = $form->get('maker')->getData();
+                if ($maker_id) {
+                // 登録・更新
+                    $Maker = $app['eccube.plugin.maker.repository.maker']->find($maker_id);
+                // ※setIdはなんだか違う気がする
+                    if ($id) {
+                        $ProductMaker->setId($id);
+                    }
+
+                    $ProductMaker
+                        ->setMakerUrl($form->get('maker_url')->getData())
+                        ->setDelFlg(0)
+                        ->setMaker($Maker);
+                        $app['orm.em']->persist($ProductMaker);
+                } else {
                 // 削除
                 // ※setIdはなんだか違う気がする
-                $ProductMaker->setId($id);
-                $app['orm.em']->remove($ProductMaker);
-            }
+                    $ProductMaker->setId($id);
+                    $app['orm.em']->remove($ProductMaker);
+                }
 
-            $app['orm.em']->flush();
+                $app['orm.em']->flush();
+            }
         }
     }
 
@@ -150,10 +174,8 @@ class Maker
         $crawler = new Crawler($response->getContent());
 
         $form = $this->app['form.factory']
-            ->createBuilder('admin_product_maker')
+            ->createBuilder('admin_product')
             ->getForm();
-
-        $form->get('maker')->setData($Makers);
 
         if ($ProductMaker) {
             // 既に登録されている商品メーカー情報が設定されている場合、初期選択
@@ -168,7 +190,7 @@ class Maker
             array('form' => $form->createView())
         );
 
-        // form1の最終項目に追加(レイアウトに依存（時間無いのでベタ）)
+        // form1の最終項目に追加(レイアウトに依存
         $html = $this->getHtmlFromCrawler($crawler);
 
         try {

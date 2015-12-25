@@ -26,9 +26,9 @@ class Version201511201300 extends AbstractMigration
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $table = $schema->getTable('plg_product_maker')
+        $table = $schema->getTable('plg_product_maker');
         if (!$table->hasColumn('maker_url')) {
-            $table->addColumn('maker_url', 'text', array('notnull' => false));
+            $table->addColumn('maker_url', 'text', array('notnull' => true));
         }
 
     }

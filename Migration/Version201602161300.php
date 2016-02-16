@@ -17,7 +17,7 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version201511201300 extends AbstractMigration
+class Version201602161300 extends AbstractMigration
 {
 
     /**
@@ -27,9 +27,10 @@ class Version201511201300 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $table = $schema->getTable('plg_product_maker');
-        if (!$table->hasColumn('maker_url')) {
-            $table->addColumn('maker_url', 'text', array('notnull' => true));
+        if ($table->hasColumn('maker_url')) {
+            $table->changeColumn('maker_url', array('NotNull' => false));
         }
+
     }
 
     /**

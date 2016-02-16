@@ -153,7 +153,7 @@ class Version201507231300 extends AbstractMigration
 
         $table->setPrimaryKey(array('product_id'));
     }
-    
+
     function getMakerCode()
     {
         $config = \Eccube\Application::alias('config');

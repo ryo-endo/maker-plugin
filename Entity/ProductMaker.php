@@ -11,6 +11,8 @@
 
 namespace Plugin\Maker\Entity;
 
+use Eccube\Util\EntityUtil;
+
 class ProductMaker extends \Eccube\Entity\AbstractEntity
 {
     /**
@@ -99,6 +101,10 @@ class ProductMaker extends \Eccube\Entity\AbstractEntity
 
     public function getMaker()
     {
+        if (EntityUtil::isEmpty($this->Maker)) {
+            return null;
+        }
+
         return $this->Maker;
     }
 

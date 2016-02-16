@@ -219,6 +219,12 @@ class Maker
             // 商品メーカーマスタから設定されているなメーカー情報を取得
             $ProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->find($id);
         }
+        $Maker = $ProductMaker->getMaker();
+
+        if (is_null($Maker)) {
+            // 商品メーカーマスタにデータが存在しないまたは削除されていれば無視する
+            return;
+        }
 
         // HTMLを取得し、DOM化
         $crawler = new Crawler($response->getContent());

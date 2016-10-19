@@ -33,7 +33,6 @@ class Version201507231300 extends AbstractMigration
         'Plugin\Maker\Entity\ProductMaker',
     );
 
-
     /**
      * @param Schema $schema
      */

@@ -18,7 +18,6 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version201602161300 extends AbstractMigration
 {
-
     /**
      * @param Schema $schema
      */
@@ -38,5 +37,4 @@ class Version201602161300 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
     }
-
 }

@@ -1,11 +1,12 @@
 {#
- This file is part of EC-CUBE
-
- Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
- http://www.lockon.co.jp/
-
- For the full copyright and license information, please view the LICENSE
- file that was distributed with this source code.
+/*
+ * This file is part of the Maker plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 #}
 {% extends 'default_frame.twig' %}
 
@@ -39,19 +40,21 @@
                     <div class="form-inline">
                         <form role="form" class="form-horizontal" name="form1" id="form1" method="post">
                             {{ form_widget(form._token) }}
-                            {{ form_widget(form.name, {attr: {placeholder: 'メーカー名を入力'}}) }}
+                            {{ form_widget(form.name, {attr: {placeholder: 'メーカー名を入力', class: 'form-control'}}) }}
                             {{ form_widget(form.id) }}
-                            <button class="btn btn-default btn-sm" type="submit" onclick="document.form1.submit(); return false;">メーカー作成</button>
+                            <button class="btn btn-default btn-sm" type="submit">メーカー作成</button>
                         </form>
+                        {{ form_errors(form.name) }}
+
                     </div>
                 </div><!-- /.box-header -->
 
-                {% if Makers|length > 0 %}
+                {% if arrMaker|length > 0 %}
                     <div class="box-body no-padding no-border">
                         <div class="sortable_list">
                             <div class="tableish">
 
-                                {% for Maker in Makers %}
+                                {% for Maker in arrMaker %}
 
                                 <div class="item_box tr" data-rank="{{ Maker.rank }}" data-maker-id="{{ Maker.id }}">
                                     <div class="item_pattern td">

@@ -1,18 +1,18 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Maker plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Plugin\Maker\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query;
+use Eccube\Common\Constant;
+use Plugin\Maker\Entity\Maker;
 
 /**
  * Maker
@@ -23,27 +23,12 @@ use Doctrine\ORM\Query;
 class MakerRepository extends EntityRepository
 {
     /**
-     * find all
+     * Up rank
      *
-     * @return type
+     * @param  Maker $Maker
+     * @return bool
      */
-    public function findAll()
-    {
-
-        $query = $this
-            ->getEntityManager()
-            ->createQuery('SELECT m FROM Plugin\Maker\Entity\Maker m ORDER BY m.rank DESC');
-        $result = $query
-            ->getResult(Query::HYDRATE_ARRAY);
-
-        return $result;
-    }
-
-    /**
-     * @param  \Plugin\Maker\Entity\Maker $Maker
-     * @return void
-     */
-    public function up(\Plugin\Maker\Entity\Maker $Maker)
+    public function up(Maker $Maker)
     {
         $em = $this->getEntityManager();
         $em->getConnection()->beginTransaction();
@@ -67,19 +52,21 @@ class MakerRepository extends EntityRepository
             $em->flush();
             $em->getConnection()->commit();
         } catch (\Exception $e) {
-            $em->getConnection()->rollback();
+            $em->getConnection()->rollBack();
 
             return false;
         }
 
         return true;
-	}
+    }
 
     /**
-     * @param  \Plugin\Maker\Entity\Maker $Maker
+     * Down rank
+     *
+     * @param  Maker $Maker
      * @return bool
      */
-    public function down(\Plugin\Maker\Entity\Maker $Maker)
+    public function down(Maker $Maker)
     {
         $em = $this->getEntityManager();
         $em->getConnection()->beginTransaction();
@@ -103,7 +90,7 @@ class MakerRepository extends EntityRepository
 
             $em->getConnection()->commit();
         } catch (\Exception $e) {
-            $em->getConnection()->rollback();
+            $em->getConnection()->rollBack();
 
             return false;
         }
@@ -112,10 +99,12 @@ class MakerRepository extends EntityRepository
     }
 
     /**
-     * @param  \Plugin\Maker\Entity\Maker $Maker
+     * Save method
+     *
+     * @param  Maker $Maker
      * @return bool
      */
-    public function save(\Plugin\Maker\Entity\Maker $Maker)
+    public function save(Maker $Maker)
     {
         $em = $this->getEntityManager();
         $em->getConnection()->beginTransaction();
@@ -129,7 +118,7 @@ class MakerRepository extends EntityRepository
                     $rank = 0;
                 }
                 $Maker->setRank($rank + 1);
-                $Maker->setDelFlg(0);
+                $Maker->setDelFlg(Constant::DISABLED);
 
                 $em->createQueryBuilder()
                     ->update('Plugin\Maker\Entity\Maker', 'm')
@@ -145,34 +134,36 @@ class MakerRepository extends EntityRepository
 
             $em->getConnection()->commit();
         } catch (\Exception $e) {
-            $em->getConnection()->rollback();
+            $em->getConnection()->rollBack();
 
             return false;
         }
+
         return true;
     }
 
     /**
-     * @param  \Plugin\Maker\Entity\Maker $Maker
+     * Delete maker (del flg)
+     *
+     * @param  Maker $Maker
      * @return bool
      */
-    public function delete(\Plugin\Maker\Entity\Maker $Maker)
+    public function delete(Maker $Maker)
     {
         $em = $this->getEntityManager();
         $em->getConnection()->beginTransaction();
         try {
-            $Maker->setDelFlg(1);
+            $Maker->setDelFlg(Constant::ENABLED);
             $em->persist($Maker);
             $em->flush();
 
             $em->getConnection()->commit();
         } catch (\Exception $e) {
-            $em->getConnection()->rollback();
+            $em->getConnection()->rollBack();
 
             return false;
         }
 
         return true;
     }
-
 }

@@ -1,29 +1,31 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Maker plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Plugin\Maker\ServiceProvider;
 
+use Plugin\Maker\Form\Extension\Admin\ProductMakerTypeExtension;
+use Plugin\Maker\Form\Type\MakerType;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
 
+/**
+ * Class MakerServiceProvider
+ * @package Plugin\Maker\ServiceProvider\
+ */
 class MakerServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * @param BaseApplication $app
+     */
     public function register(BaseApplication $app)
     {
-
-        // 不要？
-        $app['eccube.plugin.maker.repository.maker_plugin'] = $app->share(function () use ($app) {
-            return $app['orm.em']->getRepository('Plugin\Maker\Entity\MakerPlugin');
-        });
-
         // メーカーテーブル用リポジトリ
         $app['eccube.plugin.maker.repository.maker'] = $app->share(function () use ($app) {
             return $app['orm.em']->getRepository('Plugin\Maker\Entity\Maker');
@@ -34,42 +36,42 @@ class MakerServiceProvider implements ServiceProviderInterface
         });
 
         // 一覧・登録・修正
-        $app->match('/' . $app["config"]["admin_route"] . '/product/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
+        $app->match('/'.$app["config"]["admin_route"].'/product/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_maker');
 
         // 削除
-        $app->match('/' . $app["config"]["admin_route"] . '/product/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
+        $app->match('/'.$app["config"]["admin_route"].'/product/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_maker_delete');
 
         // 上
-        $app->match('/' . $app["config"]["admin_route"] . '/product/maker/{id}/up', '\\Plugin\\Maker\\Controller\\MakerController::up')
+        $app->match('/'.$app["config"]["admin_route"].'/product/maker/{id}/up', '\\Plugin\\Maker\\Controller\\MakerController::up')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_maker_up');
 
         // 下
-        $app->match('/' . $app["config"]["admin_route"] . '/product/maker/{id}/down', '\\Plugin\\Maker\\Controller\\MakerController::down')
+        $app->match('/'.$app["config"]["admin_route"].'/product/maker/{id}/down', '\\Plugin\\Maker\\Controller\\MakerController::down')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_maker_down');
 
         // 型登録
         $app['form.types'] = $app->share($app->extend('form.types', function ($types) use ($app) {
-            $types[] = new \Plugin\Maker\Form\Type\MakerType($app);
+            $types[] = new MakerType($app);
+
             return $types;
         }));
 
         // Form Extension
         $app['form.type.extensions'] = $app->share($app->extend('form.type.extensions', function ($extensions) use ($app) {
-            $extensions[] = new \Plugin\Maker\Form\Extension\Admin\ProductMakerTypeExtension($app);
+            $extensions[] = new ProductMakerTypeExtension($app);
+
             return $extensions;
         }));
 
         // メッセージ登録
         $app['translator'] = $app->share($app->extend('translator', function ($translator, \Silex\Application $app) {
-            $translator->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
-
-            $file = __DIR__ . '/../Resource/locale/message.' . $app['locale'] . '.yml';
+            $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
             if (file_exists($file)) {
                 $translator->addResource('yaml', $file, $app['locale']);
             }
@@ -91,10 +93,14 @@ class MakerServiceProvider implements ServiceProviderInterface
             }
 
             $config['nav'] = $nav;
+
             return $config;
         }));
     }
 
+    /**
+     * @param BaseApplication $app
+     */
     public function boot(BaseApplication $app)
     {
     }

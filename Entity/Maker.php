@@ -1,17 +1,22 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Maker plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Plugin\Maker\Entity;
 
-class Maker extends \Eccube\Entity\AbstractEntity
+use Eccube\Entity\AbstractEntity;
+
+/**
+ * Class Maker
+ * @package Plugin\Maker\Entity
+ */
+class Maker extends AbstractEntity
 {
 
     /**
@@ -43,13 +48,6 @@ class Maker extends \Eccube\Entity\AbstractEntity
      * @var \DateTime
      */
     private $update_date;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-    }
 
     /**
      * Set maker id
@@ -124,7 +122,7 @@ class Maker extends \Eccube\Entity\AbstractEntity
      * Set del_flg
      *
      * @param  integer $delFlg
-     * @return Payment
+     * @return Maker
      */
     public function setDelFlg($delFlg)
     {
@@ -147,7 +145,7 @@ class Maker extends \Eccube\Entity\AbstractEntity
      * Set create_date
      *
      * @param  \DateTime $createDate
-     * @return Payment
+     * @return Maker
      */
     public function setCreateDate($createDate)
     {
@@ -170,7 +168,7 @@ class Maker extends \Eccube\Entity\AbstractEntity
      * Set update_date
      *
      * @param  \DateTime $updateDate
-     * @return Payment
+     * @return Maker
      */
     public function setUpdateDate($updateDate)
     {
@@ -188,5 +186,4 @@ class Maker extends \Eccube\Entity\AbstractEntity
     {
         return $this->update_date;
     }
-
 }

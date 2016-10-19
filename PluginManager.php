@@ -1,59 +1,64 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Maker plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Plugin\Maker;
 
+use Eccube\Application;
 use Eccube\Plugin\AbstractPluginManager;
 
+/**
+ * Class PluginManager
+ * @package Plugin\Maker
+ */
 class PluginManager extends AbstractPluginManager
 {
-
     /**
-     * Image folder path (cop source)
-     * @var type
+     * @param array       $config
+     * @param Application $app
      */
-    protected $imgSrc;
-    /**
-     *Image folder path (copy destination)
-     * @var type
-     */
-    protected $imgDst;
-
-    public function __construct()
-    {
-    }
-
     public function install($config, $app)
     {
-        $this->migrationSchema($app, __DIR__ . '/Migration', $config['code']);
+        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code']);
     }
 
+    /**
+     * @param array       $config
+     * @param Application $app
+     */
     public function uninstall($config, $app)
     {
-        $this->migrationSchema($app, __DIR__ . '/Migration', $config['code'], 0);
+        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code'], 0);
     }
 
+    /**
+     * @param array       $config
+     * @param Application $app
+     */
     public function enable($config, $app)
     {
-
     }
 
+    /**
+     * @param array       $config
+     * @param Application $app
+     */
     public function disable($config, $app)
     {
-
     }
 
+    /**
+     * @param array       $config
+     * @param Application $app
+     */
     public function update($config, $app)
     {
-		$this->migrationSchema($app, __DIR__ . '/Migration', $config['code']);
+        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code']);
     }
-
 }

@@ -93,6 +93,16 @@ class MakerServiceProvider implements ServiceProviderInterface
             $config['nav'] = $nav;
             return $config;
         }));
+
+        // twig extension
+        $app['twig'] = $app->share($app->extend('twig', function (\Twig_Environment $twig, \Silex\Application $app) {
+            // 商品IDから商品ごとのメーカー設定を取得するTwig関数を追加
+            $twig->addFunction(new \Twig_SimpleFunction('getProductMaker', function($id) use ($app)  {
+                $ProductMaker = $app['eccube.plugin.maker.repository.product_maker']->find($id);
+                return $ProductMaker;
+            }));
+            return $twig;
+        }));
     }
 
     public function boot(BaseApplication $app)

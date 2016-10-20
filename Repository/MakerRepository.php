@@ -23,82 +23,6 @@ use Plugin\Maker\Entity\Maker;
 class MakerRepository extends EntityRepository
 {
     /**
-     * Up rank
-     *
-     * @param  Maker $Maker
-     * @return bool
-     */
-    public function up(Maker $Maker)
-    {
-        $em = $this->getEntityManager();
-        $em->getConnection()->beginTransaction();
-        try {
-            $rank = $Maker->getRank();
-
-            $MakerUp = $this->createQueryBuilder('m')
-                ->where('m.rank > :rank')
-                ->setParameter('rank', $rank)
-                ->orderBy('m.rank', 'ASC')
-                ->setMaxResults(1)
-                ->getQuery()
-                ->getSingleResult();
-
-            $Maker->setRank($MakerUp->getRank());
-            $MakerUp->setRank($rank);
-
-            $em->persist($Maker);
-            $em->persist($MakerUp);
-
-            $em->flush();
-            $em->getConnection()->commit();
-        } catch (\Exception $e) {
-            $em->getConnection()->rollBack();
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Down rank
-     *
-     * @param  Maker $Maker
-     * @return bool
-     */
-    public function down(Maker $Maker)
-    {
-        $em = $this->getEntityManager();
-        $em->getConnection()->beginTransaction();
-        try {
-            $rank = $Maker->getRank();
-
-            $MakerDown = $this->createQueryBuilder('m')
-                ->where('m.rank < :rank ')
-                ->setParameter('rank', $rank)
-                ->orderBy('m.rank', 'DESC')
-                ->setMaxResults(1)
-                ->getQuery()
-                ->getSingleResult();
-
-            $Maker->setRank($MakerDown->getRank());
-            $MakerDown->setRank($rank);
-
-            $em->persist($Maker);
-            $em->persist($MakerDown);
-            $em->flush();
-
-            $em->getConnection()->commit();
-        } catch (\Exception $e) {
-            $em->getConnection()->rollBack();
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Save method
      *
      * @param  Maker $Maker
@@ -162,6 +86,36 @@ class MakerRepository extends EntityRepository
             $em->getConnection()->rollBack();
 
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Move rank
+     *
+     * @param array $arrRank
+     * @return bool
+     * @throws \Exception
+     */
+    public function moveMakerRank(array $arrRank)
+    {
+        $this->getEntityManager()->beginTransaction();
+        try {
+            foreach ($arrRank as $makerId => $rank) {
+                /* @var $Maker Maker */
+                $Maker = $this->find($makerId);
+                if ($Maker->getRank() == $rank) {
+                    continue;
+                }
+                $Maker->setRank($rank);
+                $this->getEntityManager()->persist($Maker);
+            }
+            $this->getEntityManager()->flush();
+            $this->getEntityManager()->commit();
+        } catch (\Exception $e) {
+            $this->getEntityManager()->rollback();
+            throw $e;
         }
 
         return true;

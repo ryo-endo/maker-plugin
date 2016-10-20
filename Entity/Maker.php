@@ -18,7 +18,6 @@ use Eccube\Entity\AbstractEntity;
  */
 class Maker extends AbstractEntity
 {
-
     /**
      * @var integer
      */

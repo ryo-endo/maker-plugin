@@ -12,15 +12,17 @@ namespace Plugin\Maker\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Eccube\Application;
+use Eccube\Controller\AbstractController;
 use Plugin\Maker\Entity\Maker;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class MakerController
  * @package Plugin\Maker\Controller
  */
-class MakerController
+class MakerController extends AbstractController
 {
     /**
      * List, add, edit maker
@@ -54,6 +56,7 @@ class MakerController
 
             if ($status) {
                 $app->addSuccess('admin.maker.save.complete', 'admin');
+
                 return $app->redirect($app->url('admin_maker'));
             } else {
                 $app->addError('admin.maker.save.error', 'admin');
@@ -66,9 +69,9 @@ class MakerController
         $arrMaker = $app['eccube.plugin.maker.repository.maker']->findBy(array(), array('rank' => 'DESC'));
 
         return $app->render('Maker/Resource/template/admin/maker.twig', array(
-        	'form'   		=> $form->createView(),
-            'arrMaker' 		=> $arrMaker,
-            'TargetMaker' 	=> $TargetMaker,
+            'form' => $form->createView(),
+            'arrMaker'    => $arrMaker,
+            'TargetMaker' => $TargetMaker,
         ));
     }
 
@@ -82,6 +85,21 @@ class MakerController
      */
     public function delete(Application $app, Request $request, $id)
     {
+        // Valid token
+        $this->isTokenValid($app);
+
+        // Check request
+        if (!'POST' === $request->getMethod()) {
+            throw new BadRequestHttpException();
+        }
+
+        // Id valid
+        if (!$id) {
+            $app->addError('admin.maker.not_found', 'admin');
+
+            return $app->redirect($app->url('admin_recommend_list'));
+        }
+
         $repos = $app['eccube.plugin.maker.repository.maker'];
 
         $TargetMaker = $repos->find($id);
@@ -90,17 +108,7 @@ class MakerController
             throw new NotFoundHttpException();
         }
 
-        $form = $app['form.factory']
-            ->createNamedBuilder('admin_maker', 'form', null, array(
-                'allow_extra_fields' => true,
-            ))
-            ->getForm();
-
-        $status = false;
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $status = $repos->delete($TargetMaker);
-        }
+        $status = $repos->delete($TargetMaker);
 
         if ($status === true) {
             $app->addSuccess('admin.maker.delete.complete', 'admin');
@@ -112,78 +120,19 @@ class MakerController
     }
 
     /**
-     * Up rank
+     * Move rank with ajax
      *
      * @param Application $app
      * @param Request     $request
-     * @param integer     $id
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return bool
      */
-    public function up(Application $app, Request $request, $id)
+    public function moveRank(Application $app, Request $request)
     {
-        $repos = $app['eccube.plugin.maker.repository.maker'];
-
-        $TargetMaker = $repos->find($id);
-        if (!$TargetMaker) {
-            throw new NotFoundHttpException();
+        if ($request->isXmlHttpRequest()) {
+            $arrRank = $request->request->all();
+            $app['eccube.plugin.maker.repository.maker']->moveMakerRank($arrRank);
         }
 
-        $form = $app['form.factory']
-            ->createNamedBuilder('admin_maker', 'form', null, array(
-                'allow_extra_fields' => true,
-            ))
-            ->getForm();
-
-        $status = false;
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $status = $repos->up($TargetMaker);
-        }
-
-        if ($status === true) {
-            $app->addSuccess('admin.maker.down.complete', 'admin');
-        } else {
-            $app->addError('admin.maker.down.error', 'admin');
-        }
-
-        return $app->redirect($app->url('admin_maker'));
-    }
-
-    /**
-     * Down rank
-     *
-     * @param Application $app
-     * @param Request     $request
-     * @param integer     $id
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function down(Application $app, Request $request, $id)
-    {
-        $repos = $app['eccube.plugin.maker.repository.maker'];
-
-        $TargetMaker = $repos->find($id);
-        if (!$TargetMaker) {
-            throw new NotFoundHttpException();
-        }
-
-        $form = $app['form.factory']
-            ->createNamedBuilder('admin_maker', 'form', null, array(
-                'allow_extra_fields' => true,
-            ))
-            ->getForm();
-
-        $status = false;
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $status = $repos->down($TargetMaker);
-        }
-
-        if ($status === true) {
-            $app->addSuccess('admin.maker.down.complete', 'admin');
-        } else {
-            $app->addError('admin.maker.down.error', 'admin');
-        }
-
-        return $app->redirect($app->url('admin_maker'));
+        return true;
     }
 }

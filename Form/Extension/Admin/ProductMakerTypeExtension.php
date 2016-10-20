@@ -10,6 +10,7 @@
 
 namespace Plugin\Maker\Form\Extension\Admin;
 
+use Doctrine\ORM\EntityRepository;
 use Eccube\Application;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -42,6 +43,9 @@ class ProductMakerTypeExtension extends AbstractTypeExtension
             ->add('maker', 'entity', array(
                 'label' => 'メーカー',
                 'class' => 'Plugin\Maker\Entity\Maker',
+                'query_builder' => function (EntityRepository $repository) {
+                    return $repository->createQueryBuilder('m')->orderBy('m.rank', 'DESC');
+                },
                 'property' => 'name',
                 'required' => false,
                 'empty_value' => '',
@@ -54,6 +58,9 @@ class ProductMakerTypeExtension extends AbstractTypeExtension
                     new Assert\Url(),
                 ),
                 'mapped' => false,
+                'attr' => array(
+                    'placeholder' => $this->app->trans('admin.maker.placeholder.url'),
+                ),
             ));
     }
 

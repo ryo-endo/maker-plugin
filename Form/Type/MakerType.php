@@ -45,7 +45,7 @@ class MakerType extends AbstractType
                 'label' => 'メーカー名',
                 'required' => false,
                 'constraints' => array(
-                    new Assert\NotBlank(array('message' => '※ メーカー名が入力されていません。')),
+                    new Assert\NotBlank(array('message' => $this->app->trans('admin.maker.blank.error'))),
                 ),
             ))
             ->add('id', 'hidden', array());

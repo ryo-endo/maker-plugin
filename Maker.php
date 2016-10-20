@@ -244,10 +244,17 @@ class Maker
             );
 
             try {
-                // ※商品コードの下に追加
-                $parts_item_code = $crawler->filter('.item_code')->html();
-                $new_html = $parts_item_code.$parts;
-                $html = str_replace($parts_item_code, $new_html, $html);
+                $target_tag = '<!--# MakerPlugin-Tag #-->';
+                if (strpos($html, $target_tag)) {
+                    // 目印コメントの位置に追加
+                    $new_html = $target_tag.$parts;
+                    $html = str_replace($target_tag, $new_html, $html);
+                } else {
+                    // ※商品コードの下に追加
+                    $parts_item_code = $crawler->filter('.item_code')->html();
+                    $new_html = $parts_item_code.$parts;
+                    $html = str_replace($parts_item_code, $new_html, $html);
+                }
             } catch (\InvalidArgumentException $e) {
                 // no-op
             }

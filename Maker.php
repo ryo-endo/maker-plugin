@@ -13,8 +13,9 @@ namespace Plugin\Maker;
 use Doctrine\Common\Collections\ArrayCollection;
 use Eccube\Common\Constant;
 use Plugin\Maker\Entity\ProductMaker;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
@@ -138,72 +139,57 @@ class Maker
             return;
         }
 
-        // HTMLを取得し、DOM化
-        $crawler = new Crawler($response->getContent());
-        $html = $this->getHtmlFromCrawler($crawler);
-
-        if ($ProductMaker) {
-            $parts = $this->app->renderView(
-                'Maker/Resource/template/default/maker.twig',
-                array(
-                    'maker_name' => $ProductMaker->getMaker()->getName(),
-                    'maker_url' => $ProductMaker->getMakerUrl(),
-                )
-            );
-
-            try {
-                // ※商品コードの下に追加
-                $itemCodeHtml = $crawler->filter('.item_code')->html();
-                dump($itemCodeHtml);
-                $newHtml = $itemCodeHtml.$parts;
-                $html = str_replace($itemCodeHtml, $newHtml, $html);
-            } catch (\InvalidArgumentException $e) {
-                // no-op
-            }
-        }
+        $html = $this->renderProductDetail($response, $ProductMaker);
 
         $response->setContent($html);
         $event->setResponse($response);
     }
 
     /**
-     * 解析用HTMLを取得.
+     * Render html of the product detail
      *
-     * @param Crawler $crawler
-     *
-     * @return string
+     * @param Response     $response
+     * @param ProductMaker $ProductMaker
+     * @return mixed|string
      */
-    private function getHtmlFromCrawler(Crawler $crawler)
+    private function renderProductDetail(Response $response, ProductMaker $ProductMaker)
     {
-        $html = '';
-        foreach ($crawler as $domElement) {
-            $domElement->ownerDocument->formatOutput = true;
-            $html .= $domElement->ownerDocument->saveHTML();
-        }
+        $parts = $this->app->renderView(
+            'Maker/Resource/template/default/maker.twig',
+            array(
+                'maker_name' => $ProductMaker->getMaker()->getName(),
+                'maker_url' => $ProductMaker->getMakerUrl(),
+            )
+        );
 
-        return html_entity_decode($html, ENT_NOQUOTES, 'UTF-8');
+        $html = $response->getContent();
+
+        // For old and new ec-cube version
+        $search = '/(<div id="relative_category_box")|(<div class="relative_cat")/';
+        $newHtml = $parts.'<div id="relative_category_box" class="relative_cat"';
+        $html = preg_replace($search, $newHtml, $html);
+
+        return $html;
     }
 
     /**
-     * Get html
+     * Get html product management
      *
-     * @param $request
-     * @param $response
-     * @param $id
+     * @param Request  $request
+     * @param Response $response
+     * @param null     $id
      * @return array
      */
-    private function getHtml($request, $response, $id)
+    private function getHtml(Request $request, Response $response, $id = null)
     {
         $ProductMaker = null;
+        // Product for create builder (for version <= 3.0.8)
         $Product = null;
         if ($id) {
             $Product = $this->app['eccube.repository.product']->find($id);
             // 商品メーカーマスタから設定されているなメーカー情報を取得
             $ProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->find($id);
         }
-
-        // 商品登録・編集画面のHTMLを取得し、DOM化
-        $crawler = new Crawler($response->getContent());
 
         $builder = $this->app['form.factory']
             ->createBuilder('admin_product');
@@ -229,16 +215,11 @@ class Maker
             array('form' => $form->createView())
         );
 
-        // form1の最終項目に追加(レイアウトに依存
-        $html = $this->getHtmlFromCrawler($crawler);
-
-        try {
-            $oldHtml = $crawler->filter('#form1 .accordion')->last()->html();
-            $newHtml = $oldHtml.$parts;
-            $html = str_replace($oldHtml, $newHtml, $html);
-        } catch (\InvalidArgumentException $e) {
-            // no-op
-        }
+        $html = $response->getContent();
+        // For old and new version
+        $search = '/(<div class="row hidden-xs hidden-sm")|(<div id="detail_box__footer")/';
+        $newHtml = $parts.'<div id="detail_box__footer" class="row hidden-xs hidden-sm"';
+        $html = preg_replace($search, $newHtml, $html);
 
         return array($html, $form);
     }

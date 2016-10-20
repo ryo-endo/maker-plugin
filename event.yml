@@ -1,3 +1,13 @@
+# New hookpoint for version >= 3.0.9
+eccube.event.route.admin_product_product_new.response:
+    - [onAdminProductManage, NORMAL]
+eccube.event.route.admin_product_product_edit.response:
+    - [onAdminProductManage, NORMAL]
+
+eccube.event.route.product_detail.response:
+    - [onRenderProductsDetail, NORMAL]
+
+# deprecated event (for v3.0.0 - 3.0.8)
 eccube.event.render.admin_product_product_new.before:
     - [onAdminProduct, NORMAL]
 eccube.event.render.admin_product_product_edit.before:

@@ -10,7 +10,10 @@
 
 namespace Plugin\Maker\Entity;
 
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Eccube\Entity\AbstractEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class Maker
@@ -184,5 +187,17 @@ class Maker extends AbstractEntity
     public function getUpdateDate()
     {
         return $this->update_date;
+    }
+
+    /**
+     * Unique check
+     *
+     * @param ClassMetadata $metadata
+     */
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addConstraint(new UniqueEntity(array(
+            'fields'  => 'name',
+        )));
     }
 }

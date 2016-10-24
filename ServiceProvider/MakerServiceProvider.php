@@ -16,8 +16,7 @@ use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
 
 /**
- * Class MakerServiceProvider
- * @package Plugin\Maker\ServiceProvider\
+ * Class MakerServiceProvider.
  */
 class MakerServiceProvider implements ServiceProviderInterface
 {
@@ -36,16 +35,16 @@ class MakerServiceProvider implements ServiceProviderInterface
         });
 
         // 一覧・登録・修正
-        $app->match('/'.$app["config"]["admin_route"].'/product/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
+        $app->match('/'.$app['config']['admin_route'].'/product/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_maker');
 
         // 削除
-        $app->delete('/'.$app["config"]["admin_route"].'/product/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
+        $app->delete('/'.$app['config']['admin_route'].'/product/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_maker_delete');
 
-        $app->post('/'.$app["config"]["admin_route"].'/product/maker/rank/move', '\\Plugin\\Maker\\Controller\\MakerController::moveRank')
+        $app->post('/'.$app['config']['admin_route'].'/product/maker/rank/move', '\\Plugin\\Maker\\Controller\\MakerController::moveRank')
             ->bind('admin_product_maker_rank_move');
 
         // 型登録
@@ -74,13 +73,13 @@ class MakerServiceProvider implements ServiceProviderInterface
 
         // メニュー登録
         $app['config'] = $app->share($app->extend('config', function ($config) {
-            $addNavi['id'] = "maker";
-            $addNavi['name'] = "メーカー管理";
-            $addNavi['url'] = "admin_maker";
+            $addNavi['id'] = 'maker';
+            $addNavi['name'] = 'メーカー管理';
+            $addNavi['url'] = 'admin_maker';
 
             $nav = $config['nav'];
             foreach ($nav as $key => $val) {
-                if ("product" == $val["id"]) {
+                if ('product' == $val['id']) {
                     $nav[$key]['child'][] = $addNavi;
                 }
             }

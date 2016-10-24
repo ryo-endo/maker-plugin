@@ -17,8 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class ProductMakerTypeExtension
- * @package Plugin\Maker\Form\Extension\Admin
+ * Class ProductMakerTypeExtension.
  */
 class ProductMakerTypeExtension extends AbstractTypeExtension
 {
@@ -26,6 +25,7 @@ class ProductMakerTypeExtension extends AbstractTypeExtension
 
     /**
      * ProductMakerTypeExtension constructor.
+     *
      * @param Application $app
      */
     public function __construct($app)

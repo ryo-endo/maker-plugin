@@ -17,8 +17,7 @@ use Eccube\Application;
 use Eccube\Common\Constant;
 
 /**
- * Class Version201507231300
- * @package DoctrineMigrations
+ * Class Version201507231300.
  */
 class Version201507231300 extends AbstractMigration
 {
@@ -77,9 +76,10 @@ class Version201507231300 extends AbstractMigration
     }
 
     /**
-     * Create maker table
+     * Create maker table.
      *
      * @param Schema $schema
+     *
      * @return bool
      */
     protected function createPlgMaker(Schema $schema)
@@ -100,9 +100,10 @@ class Version201507231300 extends AbstractMigration
     }
 
     /**
-     * Create product maker table
+     * Create product maker table.
      *
      * @param Schema $schema
+     *
      * @return bool
      */
     protected function createPlgProductMaker(Schema $schema)
@@ -127,7 +128,7 @@ class Version201507231300 extends AbstractMigration
      */
     protected function createPlgMakerForOldVersion(Schema $schema)
     {
-        $table = $schema->createTable("plg_maker");
+        $table = $schema->createTable('plg_maker');
         $table->addColumn('maker_id', 'integer', array(
             'autoincrement' => true,
         ));
@@ -166,7 +167,7 @@ class Version201507231300 extends AbstractMigration
      */
     protected function createPlgProductMakerForOldVersion(Schema $schema)
     {
-        $table = $schema->createTable("plg_product_maker");
+        $table = $schema->createTable('plg_product_maker');
         $table->addColumn('product_id', 'integer', array(
             'notnull' => true,
         ));

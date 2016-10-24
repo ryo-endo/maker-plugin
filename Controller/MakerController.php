@@ -19,17 +19,17 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Class MakerController
- * @package Plugin\Maker\Controller
+ * Class MakerController.
  */
 class MakerController extends AbstractController
 {
     /**
-     * List, add, edit maker
+     * List, add, edit maker.
      *
      * @param Application $app
      * @param Request     $request
      * @param null        $id
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function index(Application $app, Request $request, $id = null)
@@ -63,24 +63,25 @@ class MakerController extends AbstractController
             }
         }
 
-        /**
+        /*
          * @var ArrayCollection
          */
         $arrMaker = $app['eccube.plugin.maker.repository.maker']->findBy(array(), array('rank' => 'DESC'));
 
         return $app->render('Maker/Resource/template/admin/maker.twig', array(
             'form' => $form->createView(),
-            'arrMaker'    => $arrMaker,
+            'arrMaker' => $arrMaker,
             'TargetMaker' => $TargetMaker,
         ));
     }
 
     /**
-     * Delete Maker
+     * Delete Maker.
      *
      * @param Application $app
      * @param Request     $request
-     * @param integer     $id
+     * @param int         $id
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function delete(Application $app, Request $request, $id)
@@ -120,10 +121,11 @@ class MakerController extends AbstractController
     }
 
     /**
-     * Move rank with ajax
+     * Move rank with ajax.
      *
      * @param Application $app
      * @param Request     $request
+     *
      * @return bool
      */
     public function moveRank(Application $app, Request $request)

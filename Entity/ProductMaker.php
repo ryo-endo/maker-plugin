@@ -14,8 +14,7 @@ use Eccube\Entity\AbstractEntity;
 use Eccube\Util\EntityUtil;
 
 /**
- * Class ProductMaker
- * @package Plugin\Maker\Entity
+ * Class ProductMaker.
  */
 class ProductMaker extends AbstractEntity
 {
@@ -27,9 +26,10 @@ class ProductMaker extends AbstractEntity
     private $Maker;
 
     /**
-     * Set Id
+     * Set Id.
      *
-     * @param integer $id
+     * @param int $id
+     *
      * @return $this
      */
     public function setId($id)
@@ -40,9 +40,9 @@ class ProductMaker extends AbstractEntity
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -50,9 +50,10 @@ class ProductMaker extends AbstractEntity
     }
 
     /**
-     * Set maker url
+     * Set maker url.
      *
      * @param string $makerUrl
+     *
      * @return $this
      */
     public function setMakerUrl($makerUrl)
@@ -63,7 +64,7 @@ class ProductMaker extends AbstractEntity
     }
 
     /**
-     * Get maker url
+     * Get maker url.
      *
      * @return mixed
      */
@@ -73,9 +74,10 @@ class ProductMaker extends AbstractEntity
     }
 
     /**
-     * Set Del flg
+     * Set Del flg.
      *
      * @param $delFlg
+     *
      * @return $this
      */
     public function setDelFlg($delFlg)
@@ -95,6 +97,7 @@ class ProductMaker extends AbstractEntity
 
     /**
      * @param \DateTime $createDate
+     *
      * @return $this
      */
     public function setCreateDate(\DateTime $createDate)
@@ -114,6 +117,7 @@ class ProductMaker extends AbstractEntity
 
     /**
      * @param \DateTime $updateDate
+     *
      * @return $this
      */
     public function setUpdateDate(\DateTime $updateDate)
@@ -133,6 +137,7 @@ class ProductMaker extends AbstractEntity
 
     /**
      * @param Maker $maker
+     *
      * @return $this
      */
     public function setMaker(Maker $maker)

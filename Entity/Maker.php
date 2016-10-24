@@ -12,17 +12,15 @@ namespace Plugin\Maker\Entity;
 
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Eccube\Entity\AbstractEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Class Maker
- * @package Plugin\Maker\Entity
+ * Class Maker.
  */
 class Maker extends AbstractEntity
 {
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -32,12 +30,12 @@ class Maker extends AbstractEntity
     private $name;
 
     /**
-     * @var integer
+     * @var int
      */
     private $rank;
 
     /**
-     * @var integer
+     * @var int
      */
     private $del_flg;
 
@@ -52,9 +50,10 @@ class Maker extends AbstractEntity
     private $update_date;
 
     /**
-     * Set maker id
+     * Set maker id.
      *
-     * @param  string $id
+     * @param string $id
+     *
      * @return Maker
      */
     public function setId($id)
@@ -65,9 +64,9 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -75,7 +74,7 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -85,9 +84,10 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Set name
+     * Set name.
      *
-     * @param  string $name
+     * @param string $name
+     *
      * @return Maker
      */
     public function setName($name)
@@ -98,9 +98,9 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Get rank
+     * Get rank.
      *
-     * @return integer
+     * @return int
      */
     public function getRank()
     {
@@ -108,9 +108,10 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Set rank
+     * Set rank.
      *
-     * @param  integer $rank
+     * @param int $rank
+     *
      * @return Maker
      */
     public function setRank($rank)
@@ -121,9 +122,10 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Set del_flg
+     * Set del_flg.
      *
-     * @param  integer $delFlg
+     * @param int $delFlg
+     *
      * @return Maker
      */
     public function setDelFlg($delFlg)
@@ -134,9 +136,9 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Get del_flg
+     * Get del_flg.
      *
-     * @return integer
+     * @return int
      */
     public function getDelFlg()
     {
@@ -144,9 +146,10 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Set create_date
+     * Set create_date.
      *
-     * @param  \DateTime $createDate
+     * @param \DateTime $createDate
+     *
      * @return Maker
      */
     public function setCreateDate($createDate)
@@ -157,7 +160,7 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Get create_date
+     * Get create_date.
      *
      * @return \DateTime
      */
@@ -167,9 +170,10 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Set update_date
+     * Set update_date.
      *
-     * @param  \DateTime $updateDate
+     * @param \DateTime $updateDate
+     *
      * @return Maker
      */
     public function setUpdateDate($updateDate)
@@ -180,7 +184,7 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Get update_date
+     * Get update_date.
      *
      * @return \DateTime
      */
@@ -190,14 +194,14 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Unique check
+     * Unique check.
      *
      * @param ClassMetadata $metadata
      */
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addConstraint(new UniqueEntity(array(
-            'fields'  => 'name',
+            'fields' => 'name',
         )));
     }
 }

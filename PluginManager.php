@@ -14,8 +14,7 @@ use Eccube\Application;
 use Eccube\Plugin\AbstractPluginManager;
 
 /**
- * Class PluginManager
- * @package Plugin\Maker
+ * Class PluginManager.
  */
 class PluginManager extends AbstractPluginManager
 {

@@ -19,8 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
- * Class Maker
- * @package Plugin\Maker
+ * Class Maker.
  */
 class MakerLegacy
 {
@@ -28,6 +27,7 @@ class MakerLegacy
 
     /**
      * Maker constructor.
+     *
      * @param \Eccube\Application $app
      */
     public function __construct($app)
@@ -36,10 +36,9 @@ class MakerLegacy
     }
 
     /**
-     * Add product trigger
+     * Add product trigger.
      *
      * @param FilterResponseEvent $event
-     * @return void
      */
     public function onAdminProduct(FilterResponseEvent $event)
     {
@@ -64,7 +63,7 @@ class MakerLegacy
             }
 
             if ($form->isValid()) {
-                /**
+                /*
                  * @var ArrayCollection
                  */
                 $arrMaker = $this->app['eccube.plugin.maker.repository.maker']->findBy(array(), array('rank' => 'DESC'));
@@ -112,7 +111,7 @@ class MakerLegacy
     }
 
     /**
-     * Product detail render (front)
+     * Product detail render (front).
      *
      * @param FilterResponseEvent $event
      */
@@ -146,10 +145,11 @@ class MakerLegacy
     }
 
     /**
-     * Render html of the product detail
+     * Render html of the product detail.
      *
      * @param Response     $response
      * @param ProductMaker $ProductMaker
+     *
      * @return mixed|string
      */
     private function renderProductDetail(Response $response, ProductMaker $ProductMaker)
@@ -173,11 +173,12 @@ class MakerLegacy
     }
 
     /**
-     * Get html product management
+     * Get html product management.
      *
      * @param Request  $request
      * @param Response $response
      * @param null     $id
+     *
      * @return array
      */
     private function getHtml(Request $request, Response $response, $id = null)

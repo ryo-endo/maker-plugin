@@ -10,14 +10,12 @@
 
 namespace Plugin\Maker\Form\Type;
 
-use Eccube\Application;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class MakerType
- * @package Plugin\Maker\Form\Type
+ * Class MakerType.
  */
 class MakerType extends AbstractType
 {
@@ -25,6 +23,7 @@ class MakerType extends AbstractType
 
     /**
      * MakerType constructor.
+     *
      * @param \Silex\Application $app
      */
     public function __construct($app)
@@ -33,7 +32,7 @@ class MakerType extends AbstractType
     }
 
     /**
-     * Build config type form
+     * Build config type form.
      *
      * @param FormBuilderInterface $builder
      * @param array                $options

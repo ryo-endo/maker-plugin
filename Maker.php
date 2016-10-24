@@ -14,8 +14,7 @@ use Eccube\Common\Constant;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
- * Class Maker
- * @package Plugin\Maker
+ * Class Maker.
  */
 class Maker
 {
@@ -25,6 +24,7 @@ class Maker
 
     /**
      * Maker constructor.
+     *
      * @param \Eccube\Application $app
      */
     public function __construct($app)
@@ -35,7 +35,7 @@ class Maker
 
     /**
      * New event function on version >= 3.0.9 (new hook point)
-     * Add/Edit product trigger
+     * Add/Edit product trigger.
      *
      * @param FilterResponseEvent $event
      */
@@ -46,7 +46,7 @@ class Maker
 
     /**
      * New event function on version >= 3.0.9 (new hook point)
-     * Product detail render (front)
+     * Product detail render (front).
      *
      * @param FilterResponseEvent $event
      */
@@ -56,10 +56,11 @@ class Maker
     }
 
     /**
-     * Add product trigger
+     * Add product trigger.
      *
      * @param FilterResponseEvent $event
-     * @deprecated for since v3.0.0, to be removed in 3.1.
+     *
+     * @deprecated for since v3.0.0, to be removed in 3.1
      */
     public function onAdminProduct(FilterResponseEvent $event)
     {
@@ -71,10 +72,11 @@ class Maker
     }
 
     /**
-     * Product detail render (front)
+     * Product detail render (front).
      *
      * @param FilterResponseEvent $event
-     * @deprecated for since v3.0.0, to be removed in 3.1.
+     *
+     * @deprecated for since v3.0.0, to be removed in 3.1
      */
     public function onRenderProductsDetailBefore(FilterResponseEvent $event)
     {
@@ -86,7 +88,7 @@ class Maker
     }
 
     /**
-     * v3.0.9以降のフックポイントに対応しているのか
+     * v3.0.9以降のフックポイントに対応しているのか.
      *
      * @return bool
      */

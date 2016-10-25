@@ -10,7 +10,6 @@
 
 namespace Plugin\Maker;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Eccube\Common\Constant;
 use Plugin\Maker\Entity\ProductMaker;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,6 +19,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
  * Class Maker.
+ * @deprecated Support since EC-CUBE version 3.0.0-3.0.8 and remove in version 3.1
  */
 class MakerLegacy
 {

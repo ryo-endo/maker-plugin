@@ -64,7 +64,7 @@ class MakerController extends AbstractController
         }
 
         /*
-         * @var ArrayCollection
+         * @var ArrayCollection $arrMaker
          */
         $arrMaker = $app['eccube.plugin.maker.repository.maker']->findBy(array(), array('rank' => 'DESC'));
 
@@ -84,7 +84,7 @@ class MakerController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function delete(Application $app, Request $request, $id)
+    public function delete(Application $app, Request $request, $id = null)
     {
         // Valid token
         $this->isTokenValid($app);
@@ -98,7 +98,7 @@ class MakerController extends AbstractController
         if (!$id) {
             $app->addError('admin.maker.not_found', 'admin');
 
-            return $app->redirect($app->url('admin_recommend_list'));
+            return $app->redirect($app->url('admin_maker'));
         }
 
         $repos = $app['eccube.plugin.maker.repository.maker'];

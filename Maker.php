@@ -152,8 +152,10 @@ class Maker
 
         $maker = $form->get('plg_maker')->getData();
         if (!$maker) {
-            $this->app['orm.em']->remove($ProductMaker);
-            $this->app['orm.em']->flush($ProductMaker);
+            if ($ProductMaker->getId()) {
+                $this->app['orm.em']->remove($ProductMaker);
+                $this->app['orm.em']->flush($ProductMaker);
+            }
 
             return;
         }
@@ -214,6 +216,7 @@ class Maker
          */
         $twigSource = $event->getSource();
 
+        // for plugin tag
         if (strpos($twigSource, $this->makerTag)) {
             $twigNew = $this->makerTag.$twigAppend;
             $twigSource = str_replace($this->makerTag, $twigNew, $twigSource);

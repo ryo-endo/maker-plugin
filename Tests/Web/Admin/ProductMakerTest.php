@@ -474,9 +474,11 @@ class ProductMakerTest extends MakerWebCommon
     {
         $Product = $this->createProduct(null, 1);
         $ProductType = $this->app['eccube.repository.master.product_type']->find(1);
-        $Product->getProductClasses()->first()->setProductType($ProductType);
+        $ProductClass = $Product->getProductClasses()->first();
+        $ProductClass->setProductType($ProductType);
+        $this->app['orm.em']->persist($ProductClass);
         $this->app['orm.em']->persist($Product);
-        $this->app['orm.em']->flush($Product);
+        $this->app['orm.em']->flush();
         $Maker = $this->createMaker();
 
         /**

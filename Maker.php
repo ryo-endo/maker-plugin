@@ -204,6 +204,13 @@ class Maker
             return;
         }
 
+        $Maker = $ProductMaker->getMaker();
+
+        if (!$Maker) {
+            // 商品メーカーマスタにデータが存在しないまたは削除されていれば無視する
+            return;
+        }
+
         /**
          * @var \Twig_Environment $twig
          */

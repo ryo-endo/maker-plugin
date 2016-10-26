@@ -296,6 +296,11 @@ class ProductMakerTest extends MakerWebCommon
     public function testProductEditWithAddMakerURLWithoutMakerSelect()
     {
         $Product = $this->createProduct(null, 1);
+        $ProductType = $this->app['eccube.repository.master.product_type']->find(1);
+        $Product->getProductClasses()->first()->setProductType($ProductType);
+        $this->app['orm.em']->persist($Product);
+        $this->app['orm.em']->flush($Product);
+
         $this->createMaker();
 
         /**
@@ -336,7 +341,11 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerInvalid()
     {
-        $Product = $this->createProduct();
+        $Product = $this->createProduct(null, 1);
+        $ProductType = $this->app['eccube.repository.master.product_type']->find(1);
+        $Product->getProductClasses()->first()->setProductType($ProductType);
+        $this->app['orm.em']->persist($Product);
+        $this->app['orm.em']->flush($Product);
         $this->createMaker();
 
         /**
@@ -375,7 +384,11 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerWithoutMakerUrl()
     {
-        $Product = $this->createProduct();
+        $Product = $this->createProduct(null, 1);
+        $ProductType = $this->app['eccube.repository.master.product_type']->find(1);
+        $Product->getProductClasses()->first()->setProductType($ProductType);
+        $this->app['orm.em']->persist($Product);
+        $this->app['orm.em']->flush($Product);
         $Maker = $this->createMaker();
 
         /**
@@ -416,7 +429,11 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerAndMakerUrlInValid()
     {
-        $Product = $this->createProduct();
+        $Product = $this->createProduct(null, 1);
+        $ProductType = $this->app['eccube.repository.master.product_type']->find(1);
+        $Product->getProductClasses()->first()->setProductType($ProductType);
+        $this->app['orm.em']->persist($Product);
+        $this->app['orm.em']->flush($Product);
         $Maker = $this->createMaker();
 
         /**
@@ -455,7 +472,11 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerAndMakerUrlSuccess()
     {
-        $Product = $this->createProduct();
+        $Product = $this->createProduct(null, 1);
+        $ProductType = $this->app['eccube.repository.master.product_type']->find(1);
+        $Product->getProductClasses()->first()->setProductType($ProductType);
+        $this->app['orm.em']->persist($Product);
+        $this->app['orm.em']->flush($Product);
         $Maker = $this->createMaker();
 
         /**
@@ -466,48 +487,6 @@ class ProductMakerTest extends MakerWebCommon
         unset($formData['class']);
         $formData[self::MAKER] = $Maker->getId();
         $formData[self::MAKER_URL] = '';
-
-        /**
-         * @var Client $client
-         */
-        $client = $this->client;
-        $client->request(
-            'POST',
-            $this->app->url('admin_product_product_edit', array('id' => $Product->getId())),
-            array('admin_product' => $formData)
-        );
-
-        $this->assertTrue($client->getResponse()->isRedirection());
-        $crawler = $client->followRedirect();
-
-        // Check message
-        $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
-
-        // Check database
-        $ProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->find($Product);
-
-        $this->actual = array($ProductMaker->getMaker()->getId(), $ProductMaker->getMakerUrl());
-        $this->expected = array($Maker->getId(), $formData[self::MAKER_URL]);
-        $this->verify();
-    }
-
-    /**
-     * Test edit with product class
-     */
-    public function testProductEditHasProductClassWithAddMaker()
-    {
-        // product class
-        $Product = $this->createProduct();
-        $Maker = $this->createMaker();
-
-        /**
-         * @var Generator $faker
-         */
-        $faker = $this->getFaker();
-        $formData = $this->createFormData();
-        unset($formData['class']);
-        $formData[self::MAKER] = $Maker->getId();
-        $formData[self::MAKER_URL] = $faker->url;
 
         /**
          * @var Client $client

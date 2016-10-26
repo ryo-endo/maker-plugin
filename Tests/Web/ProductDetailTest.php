@@ -23,14 +23,14 @@ use Plugin\Maker\Entity\ProductMaker;
 class ProductDetailTest extends AbstractWebTestCase
 {
     /**
-     * @var Maker $maker
+     * @var Maker $Maker
      */
-    private $maker;
+    private $Maker;
 
     /**
-     * @var ProductMaker $productMaker
+     * @var ProductMaker $ProductMaker
      */
-    private $productMaker;
+    private $ProductMaker;
 
     /**
      * Set up function.
@@ -39,9 +39,9 @@ class ProductDetailTest extends AbstractWebTestCase
     {
         parent::setUp();
         $this->deleteAllRows(array('plg_product_maker', 'plg_maker'));
-        $this->maker = $this->createMaker();
+        $this->Maker = $this->createMaker();
 
-        $this->productMaker = $this->createProductMaker($this->maker);
+        $this->ProductMaker = $this->createProductMaker($this->Maker);
     }
 
     /**
@@ -49,9 +49,9 @@ class ProductDetailTest extends AbstractWebTestCase
      */
     public function testProductDetailWhenHasMakerButUnRegister()
     {
-        $productId = $this->productMaker->getId();
-        $this->app['orm.em']->remove($this->productMaker);
-        $this->app['orm.em']->flush($this->productMaker);
+        $productId = $this->ProductMaker->getId();
+        $this->app['orm.em']->remove($this->ProductMaker);
+        $this->app['orm.em']->flush($this->ProductMaker);
         $crawler = $this->client->request('GET', $this->app->url('product_detail', array('id' => $productId)));
         $html = $crawler->filter('.item_detail')->html();
         $this->assertNotContains('メーカーコード', $html);
@@ -63,15 +63,15 @@ class ProductDetailTest extends AbstractWebTestCase
      */
     public function testProductDetailWhenRegisterMakerWithoutMakerUrl()
     {
-        $productId = $this->productMaker->getId();
-        $this->productMaker->setMakerUrl('');
-        $this->app['orm.em']->persist($this->productMaker);
-        $this->app['orm.em']->flush($this->productMaker);
+        $productId = $this->ProductMaker->getId();
+        $this->ProductMaker->setMakerUrl('');
+        $this->app['orm.em']->persist($this->ProductMaker);
+        $this->app['orm.em']->flush($this->ProductMaker);
 
         $crawler = $this->client->request('GET', $this->app->url('product_detail', array('id' => $productId)));
 
         $html = $crawler->filter('.item_detail')->html();
-        $this->assertContains($this->productMaker->getMaker()->getName(), $html);
+        $this->assertContains($this->ProductMaker->getMaker()->getName(), $html);
         $this->assertNotContains('メーカーURL', $html);
     }
 
@@ -80,13 +80,13 @@ class ProductDetailTest extends AbstractWebTestCase
      */
     public function testProductDetailWhenRegisterMakerAndMakerUrl()
     {
-        $productId = $this->productMaker->getId();
+        $productId = $this->ProductMaker->getId();
 
         $crawler = $this->client->request('GET', $this->app->url('product_detail', array('id' => $productId)));
 
         $html = $crawler->filter('.item_detail')->html();
-        $this->assertContains($this->productMaker->getMaker()->getName(), $html);
-        $this->assertContains($this->productMaker->getMakerUrl(), $html);
+        $this->assertContains($this->ProductMaker->getMaker()->getName(), $html);
+        $this->assertContains($this->ProductMaker->getMakerUrl(), $html);
     }
 
     /**

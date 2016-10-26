@@ -295,7 +295,7 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerURLWithoutMakerSelect()
     {
-        $Product = $this->createProduct(null, 0);
+        $Product = $this->createProduct(null, 1);
         $this->createMaker();
 
         /**
@@ -303,6 +303,7 @@ class ProductMakerTest extends MakerWebCommon
          */
         $faker = $this->getFaker();
         $formData = $this->createFormData();
+        unset($formData['class']);
         $formData[self::MAKER] = '';
         $formData[self::MAKER_URL] = $faker->url;
 
@@ -335,7 +336,7 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerInvalid()
     {
-        $Product = $this->createProduct(null, 0);
+        $Product = $this->createProduct();
         $this->createMaker();
 
         /**
@@ -343,6 +344,7 @@ class ProductMakerTest extends MakerWebCommon
          */
         $faker = $this->getFaker();
         $formData = $this->createFormData();
+        unset($formData['class']);
         $formData[self::MAKER] = 99999;
         $formData[self::MAKER_URL] = $faker->url;
 
@@ -373,7 +375,7 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerWithoutMakerUrl()
     {
-        $Product = $this->createProduct(null, 0);
+        $Product = $this->createProduct();
         $Maker = $this->createMaker();
 
         /**
@@ -381,6 +383,7 @@ class ProductMakerTest extends MakerWebCommon
          */
         $faker = $this->getFaker();
         $formData = $this->createFormData();
+        unset($formData['class']);
         $formData[self::MAKER] = $Maker->getId();
         $formData[self::MAKER_URL] = '';
 
@@ -413,7 +416,7 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerAndMakerUrlInValid()
     {
-        $Product = $this->createProduct(null, 0);
+        $Product = $this->createProduct();
         $Maker = $this->createMaker();
 
         /**
@@ -421,6 +424,7 @@ class ProductMakerTest extends MakerWebCommon
          */
         $faker = $this->getFaker();
         $formData = $this->createFormData();
+        unset($formData['class']);
         $formData[self::MAKER] = $Maker->getId();
         $formData[self::MAKER_URL] = $faker->word;
 
@@ -451,7 +455,7 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductEditWithAddMakerAndMakerUrlSuccess()
     {
-        $Product = $this->createProduct(null, 0);
+        $Product = $this->createProduct();
         $Maker = $this->createMaker();
 
         /**
@@ -459,6 +463,7 @@ class ProductMakerTest extends MakerWebCommon
          */
         $faker = $this->getFaker();
         $formData = $this->createFormData();
+        unset($formData['class']);
         $formData[self::MAKER] = $Maker->getId();
         $formData[self::MAKER_URL] = '';
 

@@ -81,7 +81,7 @@ class MakerRepository extends EntityRepository
         try {
             $Maker->setDelFlg(Constant::ENABLED);
             $em->persist($Maker);
-            $em->flush();
+            $em->flush($Maker);
 
             $em->getConnection()->commit();
         } catch (\Exception $e) {

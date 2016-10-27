@@ -223,16 +223,7 @@ class Maker
          */
         $twigSource = $event->getSource();
 
-        // for plugin tag
-        if (strpos($twigSource, $this->makerTag)) {
-            $twigNew = $this->makerTag.$twigAppend;
-            $twigSource = str_replace($this->makerTag, $twigNew, $twigSource);
-        } else {
-            // For old and new ec-cube version
-            $search = '/(<div id="relative_category_box")|(<div class="relative_cat")/';
-            $twigNew = $twigAppend.'<div id="relative_category_box" class="relative_cat"';
-            $twigSource = preg_replace($search, $twigNew, $twigSource);
-        }
+        $twigSource = $this->legacyEvent->renderPosition($twigSource, $twigAppend, $this->makerTag);
 
         $event->setSource($twigSource);
 

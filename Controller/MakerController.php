@@ -63,7 +63,7 @@ class MakerController extends AbstractController
             }
         }
 
-        /*
+        /**
          * @var ArrayCollection $arrMaker
          */
         $arrMaker = $app['eccube.plugin.maker.repository.maker']->findBy(array(), array('rank' => 'DESC'));

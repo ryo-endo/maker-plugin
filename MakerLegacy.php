@@ -23,7 +23,15 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
  */
 class MakerLegacy
 {
+    /**
+     * @var \Eccube\Application
+     */
     private $app;
+
+    /**
+     * @var string target render on the front-end
+     */
+    private $makerTag = '<!--# MakerPlugin-Tag #-->';
 
     /**
      * Maker constructor.
@@ -95,15 +103,17 @@ class MakerLegacy
                         ->setDelFlg(Constant::DISABLED)
                         ->setMaker($Maker);
                     $app['orm.em']->persist($ProductMaker);
-                    $app['orm.em']->flush();
+                    $app['orm.em']->flush($ProductMaker);
 
                     return;
                 }
 
-                // 削除
-                // ※setIdはなんだか違う気がする
-                $app['orm.em']->remove($ProductMaker);
-                $app['orm.em']->flush();
+                if ($ProductMaker->getId()) {
+                    // 削除
+                    // ※setIdはなんだか違う気がする
+                    $app['orm.em']->remove($ProductMaker);
+                    $app['orm.em']->flush($ProductMaker);
+                }
             }
         }
 
@@ -145,6 +155,33 @@ class MakerLegacy
     }
 
     /**
+     * Render position
+     *
+     * @param string $html
+     * @param string $part
+     * @param string $markTag
+     * @return mixed
+     */
+    public function renderPosition($html, $part, $markTag = '')
+    {
+        if (!$markTag) {
+            $markTag = $this->makerTag;
+        }
+        // for plugin tag
+        if (strpos($html, $markTag)) {
+            $newHtml = $markTag.$part;
+            $html = str_replace($markTag, $newHtml, $html);
+        } else {
+            // For old and new ec-cube version
+            $search = '/(<div id="relative_category_box")|(<div class="relative_cat")/';
+            $newHtml = $part.'<div id="relative_category_box" class="relative_cat"';
+            $html = preg_replace($search, $newHtml, $html);
+        }
+
+        return $html;
+    }
+
+    /**
      * Render html of the product detail.
      *
      * @param Response     $response
@@ -164,10 +201,7 @@ class MakerLegacy
 
         $html = $response->getContent();
 
-        // For old and new ec-cube version
-        $search = '/(<div id="relative_category_box")|(<div class="relative_cat")/';
-        $newHtml = $parts.'<div id="relative_category_box" class="relative_cat"';
-        $html = preg_replace($search, $newHtml, $html);
+        $html = $this->renderPosition($html, $parts, $this->makerTag);
 
         return $html;
     }

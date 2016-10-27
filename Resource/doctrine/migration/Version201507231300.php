@@ -27,14 +27,22 @@ class Version201507231300 extends AbstractMigration
      */
     const NAME = 'plg_maker';
 
+    /**
+     * @var string product maker table
+     */
     const NAME2 = 'plg_product_maker';
 
+    /**
+     * @var array plugin entity
+     */
     protected $entities = array(
         'Plugin\Maker\Entity\Maker',
         'Plugin\Maker\Entity\ProductMaker',
     );
 
     /**
+     * Up method
+     *
      * @param Schema $schema
      */
     public function up(Schema $schema)
@@ -49,6 +57,8 @@ class Version201507231300 extends AbstractMigration
     }
 
     /**
+     * Down method
+     *
      * @param Schema $schema
      */
     public function down(Schema $schema)
@@ -125,6 +135,8 @@ class Version201507231300 extends AbstractMigration
     }
 
     /**
+     * Create maker for old version
+     *
      * @param Schema $schema
      */
     protected function createPlgMakerForOldVersion(Schema $schema)
@@ -164,6 +176,8 @@ class Version201507231300 extends AbstractMigration
     }
 
     /**
+     * Create product maker for old version.
+     *
      * @param Schema $schema
      */
     protected function createPlgProductMakerForOldVersion(Schema $schema)

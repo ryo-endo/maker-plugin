@@ -18,11 +18,30 @@ use Eccube\Util\EntityUtil;
  */
 class ProductMaker extends AbstractEntity
 {
+    /**
+     * @var int
+     */
     private $id;
+    /**
+     * @var string
+     */
     private $maker_url;
+    /**
+     * @var int
+     */
     private $del_flg;
+    /**
+     * @var \DateTime
+     */
     private $create_date;
+    /**
+     * @var \DateTime
+     */
     private $update_date;
+
+    /**
+     * @var Maker
+     */
     private $Maker;
 
     /**

@@ -11,16 +11,16 @@ namespace Plugin\Maker\Tests\Web;
 
 use Eccube\Common\Constant;
 use Eccube\Entity\Product;
-use Eccube\Tests\Web\AbstractWebTestCase;
 use Faker\Generator;
 use Plugin\Maker\Entity\Maker;
 use Plugin\Maker\Entity\ProductMaker;
+use Symfony\Component\HttpKernel\Client;
 
 /**
  * Class ProductDetailTest
  * Hook point test
  */
-class ProductDetailTest extends AbstractWebTestCase
+class ProductDetailTest extends MakerWebCommon
 {
     /**
      * @var Maker $Maker
@@ -134,7 +134,32 @@ class ProductDetailTest extends AbstractWebTestCase
         $faker = $this->getFaker();
 
         if (!$Product) {
-            $Product = $this->createProduct();
+            // New product
+            /**
+             * @var Generator $faker
+             */
+            $faker = $this->getFaker();
+            $formData = $this->createFormData();
+            $formData['plg_maker'] = '';
+            $formData['plg_maker_url'] = '';
+
+            /**
+             * @var Client $client
+             */
+            $client = $this->client;
+            $client->request(
+                'POST',
+                $this->app->url('admin_product_product_new'),
+                array('admin_product' => $formData)
+            );
+
+            $this->assertTrue($client->getResponse()->isRedirection());
+
+            $arrTmp = explode('/', $client->getResponse()->getTargetUrl());
+            $productId = $arrTmp[count($arrTmp)-2];
+
+            $client->followRedirect();
+            $Product = $this->app['eccube.repository.product']->find($productId);
         }
 
         $ProductMaker = new ProductMaker();

@@ -10,6 +10,7 @@
 
 namespace Plugin\Maker\Tests\Web\Admin;
 
+use Eccube\Common\Constant;
 use Faker\Generator;
 use Plugin\Maker\Tests\Web\MakerWebCommon;
 use Symfony\Component\DomCrawler\Crawler;
@@ -60,7 +61,7 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMakerCreateNameIsEmpty()
     {
-        $formData = $this->createFormData();
+        $formData = $this->createMakerFormData();
         $formData['name'] = '';
         $crawler = $this->client->request(
             'POST',
@@ -79,7 +80,7 @@ class MakerControllerTest extends MakerWebCommon
     {
         // Exist maker
         $Maker = $this->createMaker(1);
-        $formData = $this->createFormData();
+        $formData = $this->createMakerFormData();
         $formData['name'] = $Maker->getName();
         $crawler = $this->client->request(
             'POST',
@@ -96,7 +97,7 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMakerCreate()
     {
-        $formData = $this->createFormData();
+        $formData = $this->createMakerFormData();
         $this->client->request(
             'POST',
             $this->app->url('admin_maker'),
@@ -124,7 +125,7 @@ class MakerControllerTest extends MakerWebCommon
     public function testMakerEditNameIsEmpty()
     {
         $Maker = $this->createMaker(1);
-        $formData = $this->createFormData($Maker->getId());
+        $formData = $this->createMakerFormData($Maker->getId());
         $formData['name'] = '';
 
         /**
@@ -147,7 +148,7 @@ class MakerControllerTest extends MakerWebCommon
     {
         $MakerBefore = $this->createMaker(1);
         $Maker = $this->createMaker(1);
-        $formData = $this->createFormData($Maker->getId());
+        $formData = $this->createMakerFormData($Maker->getId());
 
         $formData['name'] = $MakerBefore->getName();
 
@@ -172,7 +173,7 @@ class MakerControllerTest extends MakerWebCommon
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
         $Maker = $this->createMaker(1);
         $editId = $Maker->getId() + 1;
-        $formData = $this->createFormData($editId);
+        $formData = $this->createMakerFormData($editId);
 
         $this->client->request(
             'POST',
@@ -187,7 +188,7 @@ class MakerControllerTest extends MakerWebCommon
     public function testMakerEdit()
     {
         $Maker = $this->createMaker(1);
-        $formData = $this->createFormData($Maker->getId());
+        $formData = $this->createMakerFormData($Maker->getId());
 
         $this->client->request(
             'POST',
@@ -281,7 +282,11 @@ class MakerControllerTest extends MakerWebCommon
 
         // Check item name
         $html = $crawler->filter('.box')->html();
-        $this->assertNotContains($Maker->getName(), $html);
+        $this->assertContains('データはありません', $html);
+
+        $this->actual = $Maker->getDelFlg();
+        $this->expected = Constant::ENABLED;
+        $this->verify();
     }
 
     /**
@@ -355,7 +360,7 @@ class MakerControllerTest extends MakerWebCommon
      *
      * @return array
      */
-    private function createFormData($makerId = null)
+    private function createMakerFormData($makerId = null)
     {
         /**
          * @var Generator $faker

@@ -14,6 +14,7 @@ use Plugin\Maker\Form\Extension\Admin\ProductMakerTypeExtension;
 use Plugin\Maker\Form\Type\MakerType;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
+use Symfony\Component\Translation\Translator;
 
 /**
  * Class MakerServiceProvider.
@@ -62,7 +63,7 @@ class MakerServiceProvider implements ServiceProviderInterface
         }));
 
         // メッセージ登録
-        $app['translator'] = $app->share($app->extend('translator', function ($translator, \Silex\Application $app) {
+        $app['translator'] = $app->share($app->extend('translator', function (Translator $translator, \Silex\Application $app) {
             $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
             if (file_exists($file)) {
                 $translator->addResource('yaml', $file, $app['locale']);

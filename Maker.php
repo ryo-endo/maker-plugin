@@ -122,7 +122,7 @@ class Maker
 
     /**
      * New event function on version >= 3.0.9 (new hook point)
-     * Save event
+     * Save event.
      *
      * @param EventArgs $eventArgs
      */

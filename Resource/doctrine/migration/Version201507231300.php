@@ -25,12 +25,12 @@ class Version201507231300 extends AbstractMigration
     /**
      * @var string table name
      */
-    const NAME = 'plg_maker';
+    const MAKER = 'plg_maker';
 
     /**
      * @var string product maker table
      */
-    const NAME2 = 'plg_product_maker';
+    const PRODUCTMAKER = 'plg_product_maker';
 
     /**
      * @var array plugin entity
@@ -81,8 +81,8 @@ class Version201507231300 extends AbstractMigration
                 }
             }
         } else {
-            $schema->dropTable(self::NAME);
-            $schema->dropTable(self::NAME2);
+            $schema->dropTable(self::MAKER);
+            $schema->dropTable(self::PRODUCTMAKER);
         }
     }
 
@@ -95,7 +95,7 @@ class Version201507231300 extends AbstractMigration
      */
     protected function createPlgMaker(Schema $schema)
     {
-        if ($schema->hasTable(self::NAME)) {
+        if ($schema->hasTable(self::MAKER)) {
             return true;
         }
 
@@ -119,7 +119,7 @@ class Version201507231300 extends AbstractMigration
      */
     protected function createPlgProductMaker(Schema $schema)
     {
-        if ($schema->hasTable(self::NAME2)) {
+        if ($schema->hasTable(self::PRODUCTMAKER)) {
             return true;
         }
 

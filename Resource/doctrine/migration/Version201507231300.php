@@ -14,8 +14,8 @@ use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\Tools\SchemaTool;
 use Eccube\Application;
-use Eccube\Common\Constant;
 use Doctrine\ORM\EntityManager;
+use Plugin\Maker\Utils\Version;
 
 /**
  * Class Version201507231300.
@@ -40,6 +40,10 @@ class Version201507231300 extends AbstractMigration
         'Plugin\Maker\Entity\ProductMaker',
     );
 
+    protected $sequence = array(
+        'plg_maker_maker_id_seq',
+    );
+
     /**
      * Up method
      *
@@ -47,7 +51,7 @@ class Version201507231300 extends AbstractMigration
      */
     public function up(Schema $schema)
     {
-        if (version_compare(Constant::VERSION, '3.0.9', '>=')) {
+        if (Version::isSupport()) {
             $this->createPlgMaker($schema);
             $this->createPlgProductMaker($schema);
         } else {
@@ -63,7 +67,7 @@ class Version201507231300 extends AbstractMigration
      */
     public function down(Schema $schema)
     {
-        if (version_compare(Constant::VERSION, '3.0.9', '>=')) {
+        if (Version::isSupport()) {
             $app = Application::getInstance();
             $meta = $this->getMetadata($app['orm.em']);
             $tool = new SchemaTool($app['orm.em']);
@@ -81,8 +85,20 @@ class Version201507231300 extends AbstractMigration
                 }
             }
         } else {
-            $schema->dropTable(self::MAKER);
-            $schema->dropTable(self::PRODUCTMAKER);
+            if ($schema->hasTable(self::MAKER)) {
+                $schema->dropTable(self::MAKER);
+            }
+            if ($schema->hasTable(self::PRODUCTMAKER)) {
+                $schema->dropTable(self::PRODUCTMAKER);
+            }
+        }
+
+        if ($this->connection->getDatabasePlatform()->getName() == 'postgresql') {
+            foreach ($this->sequence as $sequence) {
+                if ($schema->hasSequence($sequence)) {
+                    $schema->dropSequence($sequence);
+                }
+            }
         }
     }
 
@@ -141,7 +157,7 @@ class Version201507231300 extends AbstractMigration
      */
     protected function createPlgMakerForOldVersion(Schema $schema)
     {
-        $table = $schema->createTable('plg_maker');
+        $table = $schema->createTable(self::MAKER);
         $table->addColumn('maker_id', 'integer', array(
             'autoincrement' => true,
         ));
@@ -182,7 +198,7 @@ class Version201507231300 extends AbstractMigration
      */
     protected function createPlgProductMakerForOldVersion(Schema $schema)
     {
-        $table = $schema->createTable('plg_product_maker');
+        $table = $schema->createTable(self::PRODUCTMAKER);
         $table->addColumn('product_id', 'integer', array(
             'notnull' => true,
         ));

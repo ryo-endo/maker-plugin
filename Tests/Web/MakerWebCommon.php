@@ -14,6 +14,7 @@ use Eccube\Common\Constant;
 use Eccube\Tests\Web\Admin\AbstractAdminWebTestCase;
 use Faker\Generator;
 use Plugin\Maker\Entity\Maker;
+use Plugin\Maker\Utils\Version;
 
 /**
  * Class MakerWebTestCase
@@ -59,7 +60,7 @@ class MakerWebCommon extends AbstractAdminWebTestCase
             'delete_images' => null,
             '_token' => 'dummy',
         );
-        if (version_compare(Constant::VERSION, '3.0.9', '==')) {
+        if (Version::isSupport('3.0.9', '==')) {
             unset($form['Tag']);
             $form['tag'] = $faker->word;
         }

@@ -17,6 +17,7 @@ use Eccube\Common\Constant;
 use Eccube\Event\TemplateEvent;
 use Plugin\Maker\Entity\ProductMaker;
 use Plugin\Maker\Repository\ProductMakerRepository;
+use Plugin\Maker\Utils\Version;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -271,6 +272,6 @@ class Maker
      */
     private function supportNewHookPoint()
     {
-        return version_compare('3.0.9', Constant::VERSION, '<=');
+        return Version::isSupport();
     }
 }

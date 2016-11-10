@@ -98,13 +98,14 @@ class MakerRepository extends EntityRepository
      *
      * @param array $arrRank
      *
-     * @return bool
+     * @return array
      *
      * @throws \Exception
      */
     public function moveMakerRank(array $arrRank)
     {
         $this->getEntityManager()->beginTransaction();
+        $arrMoveRank = array();
         try {
             foreach ($arrRank as $makerId => $rank) {
                 /* @var $Maker Maker */
@@ -112,6 +113,7 @@ class MakerRepository extends EntityRepository
                 if ($Maker->getRank() == $rank) {
                     continue;
                 }
+                $arrMoveRank[$makerId] = $rank;
                 $Maker->setRank($rank);
                 $this->getEntityManager()->persist($Maker);
             }
@@ -122,6 +124,6 @@ class MakerRepository extends EntityRepository
             throw $e;
         }
 
-        return true;
+        return $arrMoveRank;
     }
 }

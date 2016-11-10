@@ -60,6 +60,7 @@ class Maker
      */
     public function onAdminProductInit(EventArgs $event)
     {
+        log_info('Event: product maker hook into the product render start.');
         /**
          * @var FormBuilder $builder
          */
@@ -114,21 +115,25 @@ class Maker
         }
 
         if (!$ProductMaker) {
+            log_info('Event: Product maker not found!', array('Product id' => $id));
+
             return;
         }
 
         $builder->get('plg_maker')->setData($ProductMaker->getMaker());
         $builder->get('plg_maker_url')->setData($ProductMaker->getMakerUrl());
+        log_info('Event: product maker hook into the product render end.');
     }
 
     /**
-     * New event function on version >= 3.0.9 (new hook point)
+     * New Event:function on version >= 3.0.9 (new hook point)
      * Save event.
      *
      * @param EventArgs $eventArgs
      */
     public function onAdminProductComplete(EventArgs $eventArgs)
     {
+        log_info('Event: product maker hook into the product management complete start.');
         /**
          * @var Form $form
          */
@@ -154,6 +159,7 @@ class Maker
         $maker = $form->get('plg_maker')->getData();
         if (!$maker) {
             if ($ProductMaker->getId()) {
+                log_info('Event: product maker removed', array('Product maker id' => $ProductMaker->getId()));
                 $this->app['orm.em']->remove($ProductMaker);
                 $this->app['orm.em']->flush($ProductMaker);
             }
@@ -173,6 +179,9 @@ class Maker
          */
         $this->app['orm.em']->persist($ProductMaker);
         $this->app['orm.em']->flush($ProductMaker);
+        log_info('Event: product maker save success!', array('Product id' => $ProductMaker->getId()));
+
+        log_info('Event: product maker hook into the product management complete end.');
     }
 
     /**
@@ -183,6 +192,8 @@ class Maker
      */
     public function onRenderProductsDetail(TemplateEvent $event)
     {
+        log_info('Event: product maker hook into the product detail start.');
+
         $parameters = $event->getParameters();
         /**
          * @var Product $Product
@@ -202,12 +213,15 @@ class Maker
          */
         $ProductMaker = $repository->find($Product);
         if (!$ProductMaker) {
+            log_info('Event: product maker not found.', array('Product id' => $Product->getId()));
+
             return;
         }
 
         $Maker = $ProductMaker->getMaker();
 
         if (!$Maker) {
+            log_info('Event: maker not found.', array('Product maker id' => $ProductMaker->getId()));
             // 商品メーカーマスタにデータが存在しないまたは削除されていれば無視する
             return;
         }
@@ -231,6 +245,8 @@ class Maker
         $parameters['maker_name'] = $ProductMaker->getMaker()->getName();
         $parameters['maker_url'] = $ProductMaker->getMakerUrl();
         $event->setParameters($parameters);
+        log_info('Event: product maker render success.', array('Product id' => $ProductMaker->getId()));
+        log_info('Event: product maker hook into the product detail end.');
     }
 
     /**

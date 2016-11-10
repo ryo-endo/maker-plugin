@@ -12,9 +12,13 @@ namespace Plugin\Maker\ServiceProvider;
 
 use Plugin\Maker\Form\Extension\Admin\ProductMakerTypeExtension;
 use Plugin\Maker\Form\Type\MakerType;
+use Plugin\Maker\Utils\Version;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\Translation\Translator;
+
+// include log functions (for 3.0.0 - 3.0.11)
+require_once(__DIR__.'/../log.php');
 
 /**
  * Class MakerServiceProvider.
@@ -89,6 +93,11 @@ class MakerServiceProvider implements ServiceProviderInterface
 
             return $config;
         }));
+
+        // initialize logger (for 3.0.0 - 3.0.8)
+        if (Version::isSupport('3.0.8', '<=')) {
+            eccube_log_init($app);
+        }
     }
 
     /**

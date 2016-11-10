@@ -41,6 +41,7 @@ class MakerController extends AbstractController
         if ($id) {
             $TargetMaker = $repos->find($id);
             if (!$TargetMaker) {
+                log_error('The Maker not found!', array('Maker id' => $id));
                 throw new NotFoundHttpException();
             }
         }
@@ -52,13 +53,16 @@ class MakerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            log_info('Maker add/edit start.');
             $status = $repos->save($TargetMaker);
 
             if ($status) {
+                log_info('Maker add/edit success', array('Maker id' => $TargetMaker->getId()));
                 $app->addSuccess('admin.maker.save.complete', 'admin');
 
                 return $app->redirect($app->url('admin_maker'));
             } else {
+                log_info('Maker add/edit fail!', array('Maker id' => $TargetMaker->getId()));
                 $app->addError('admin.maker.save.error', 'admin');
             }
         }
@@ -91,11 +95,13 @@ class MakerController extends AbstractController
 
         // Check request
         if (!'POST' === $request->getMethod()) {
+            log_error('Delete with bad method!');
             throw new BadRequestHttpException();
         }
 
         // Id valid
         if (!$id) {
+            log_info('The maker not found!', array('Maker id' => $id));
             $app->addError('admin.maker.not_found', 'admin');
 
             return $app->redirect($app->url('admin_maker'));
@@ -106,14 +112,17 @@ class MakerController extends AbstractController
         $TargetMaker = $repos->find($id);
 
         if (!$TargetMaker) {
+            log_error('The maker not found!', array('Maker id' => $id));
             throw new NotFoundHttpException();
         }
 
         $status = $repos->delete($TargetMaker);
 
         if ($status === true) {
+            log_info('The maker delete success!', array('Maker id' => $id));
             $app->addSuccess('admin.maker.delete.complete', 'admin');
         } else {
+            log_info('The maker delete fail!', array('Maker id' => $id));
             $app->addError('admin.maker.delete.error', 'admin');
         }
 
@@ -132,7 +141,8 @@ class MakerController extends AbstractController
     {
         if ($request->isXmlHttpRequest()) {
             $arrRank = $request->request->all();
-            $app['eccube.plugin.maker.repository.maker']->moveMakerRank($arrRank);
+            $arrMoved = $app['eccube.plugin.maker.repository.maker']->moveMakerRank($arrRank);
+            log_info('Maker move rank', $arrMoved);
         }
 
         return true;

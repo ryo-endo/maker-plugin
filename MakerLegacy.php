@@ -50,8 +50,11 @@ class MakerLegacy
      */
     public function onAdminProduct(FilterResponseEvent $event)
     {
+        log_info('EventLegacy: product maker hook into product management start');
         $app = $this->app;
         if (!$this->app->isGranted('ROLE_ADMIN')) {
+            log_info('EventLegacy: invalid role!');
+
             return;
         }
 
@@ -71,6 +74,7 @@ class MakerLegacy
             }
 
             if ($form->isValid()) {
+                log_info('EventLegacy: Product maker register begin');
                 /*
                  * @var ArrayCollection
                  */
@@ -104,6 +108,7 @@ class MakerLegacy
                         ->setMaker($Maker);
                     $app['orm.em']->persist($ProductMaker);
                     $app['orm.em']->flush($ProductMaker);
+                    log_info('EventLegacy: Product maker register success', array('Product id' => $id));
 
                     return;
                 }
@@ -113,9 +118,11 @@ class MakerLegacy
                     // ※setIdはなんだか違う気がする
                     $app['orm.em']->remove($ProductMaker);
                     $app['orm.em']->flush($ProductMaker);
+                    log_info('EventLegacy: Product maker removed', array('Product maker id' => $ProductMaker->getId()));
                 }
             }
         }
+        log_info('EventLegacy: product maker hook into product management end');
 
         return;
     }
@@ -127,6 +134,7 @@ class MakerLegacy
      */
     public function onRenderProductsDetailBefore(FilterResponseEvent $event)
     {
+        log_info('EventLegacy: product maker hook into the product detail start.');
         $request = $event->getRequest();
         $response = $event->getResponse();
         $id = $request->attributes->get('id');
@@ -138,12 +146,15 @@ class MakerLegacy
         }
 
         if (!$ProductMaker) {
+            log_info('EventLegacy: product maker not found.', array('Product id' => $id));
+
             return;
         }
 
         $Maker = $ProductMaker->getMaker();
 
         if (!$Maker) {
+            log_info('EventLegacy: maker not found.', array('Product maker id' => $ProductMaker->getId()));
             // 商品メーカーマスタにデータが存在しないまたは削除されていれば無視する
             return;
         }
@@ -152,6 +163,8 @@ class MakerLegacy
 
         $response->setContent($html);
         $event->setResponse($response);
+        log_info('EventLegacy: product maker render success.', array('Product id' => $ProductMaker->getId()));
+        log_info('EventLegacy: product maker hook into the product detail end.');
     }
 
     /**
@@ -160,6 +173,7 @@ class MakerLegacy
      * @param string $html
      * @param string $part
      * @param string $markTag
+     *
      * @return mixed
      */
     public function renderPosition($html, $part, $markTag = '')

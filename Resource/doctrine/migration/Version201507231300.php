@@ -51,7 +51,7 @@ class Version201507231300 extends AbstractMigration
      */
     public function up(Schema $schema)
     {
-        if (Version::isSupport()) {
+        if (Version::isSupportGetInstanceFunction()) {
             $this->createPlgMaker($schema);
             $this->createPlgProductMaker($schema);
         } else {
@@ -67,7 +67,7 @@ class Version201507231300 extends AbstractMigration
      */
     public function down(Schema $schema)
     {
-        if (Version::isSupport()) {
+        if (Version::isSupportGetInstanceFunction()) {
             $app = Application::getInstance();
             $meta = $this->getMetadata($app['orm.em']);
             $tool = new SchemaTool($app['orm.em']);

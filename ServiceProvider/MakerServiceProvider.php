@@ -95,7 +95,7 @@ class MakerServiceProvider implements ServiceProviderInterface
         }));
 
         // initialize logger (for 3.0.0 - 3.0.8)
-        if (Version::isSupport('3.0.8', '<=')) {
+        if (!Version::isSupportGetInstanceFunction()) {
             eccube_log_init($app);
         }
     }

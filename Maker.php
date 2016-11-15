@@ -288,6 +288,6 @@ class Maker
      */
     private function supportNewHookPoint()
     {
-        return Version::isSupport();
+        return Version::isSupportGetInstanceFunction();
     }
 }

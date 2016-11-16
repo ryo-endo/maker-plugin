@@ -10,6 +10,8 @@
 
 namespace Plugin\Maker\ServiceProvider;
 
+use Plugin\Maker\Event\Maker;
+use Plugin\Maker\Event\MakerLegacy;
 use Plugin\Maker\Form\Extension\Admin\ProductMakerTypeExtension;
 use Plugin\Maker\Form\Type\MakerType;
 use Plugin\Maker\Utils\Version;
@@ -37,6 +39,16 @@ class MakerServiceProvider implements ServiceProviderInterface
 
         $app['eccube.plugin.maker.repository.product_maker'] = $app->share(function () use ($app) {
             return $app['orm.em']->getRepository('Plugin\Maker\Entity\ProductMaker');
+        });
+
+        // Maker event
+        $app['eccube.plugin.maker.event.maker'] = $app->share(function () use ($app) {
+            return new Maker($app);
+        });
+
+        // Maker legacy event
+        $app['eccube.plugin.maker.event.maker_legacy'] = $app->share(function () use ($app) {
+            return new MakerLegacy($app);
         });
 
         // 一覧・登録・修正

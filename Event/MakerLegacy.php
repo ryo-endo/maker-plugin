@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\Maker;
+namespace Plugin\Maker\Event;
 
 use Eccube\Common\Constant;
 use Plugin\Maker\Entity\ProductMaker;
@@ -19,30 +19,11 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
  * Class Maker.
- * @deprecated Support since EC-CUBE version 3.0.0-3.0.8 and remove in version 3.1
+ *
+ * @deprecated Support since EC-CUBE version 3.0.0-3.0.8 and will remove in version 3.1
  */
-class MakerLegacy
+class MakerLegacy extends CommonEvent
 {
-    /**
-     * @var \Eccube\Application
-     */
-    private $app;
-
-    /**
-     * @var string target render on the front-end
-     */
-    private $makerTag = '<!--# MakerPlugin-Tag #-->';
-
-    /**
-     * Maker constructor.
-     *
-     * @param \Eccube\Application $app
-     */
-    public function __construct($app)
-    {
-        $this->app = $app;
-    }
-
     /**
      * Add product trigger.
      *
@@ -165,34 +146,6 @@ class MakerLegacy
         $event->setResponse($response);
         log_info('EventLegacy: product maker render success.', array('Product id' => $ProductMaker->getId()));
         log_info('EventLegacy: product maker hook into the product detail end.');
-    }
-
-    /**
-     * Render position
-     *
-     * @param string $html
-     * @param string $part
-     * @param string $markTag
-     *
-     * @return mixed
-     */
-    public function renderPosition($html, $part, $markTag = '')
-    {
-        if (!$markTag) {
-            $markTag = $this->makerTag;
-        }
-        // for plugin tag
-        if (strpos($html, $markTag)) {
-            $newHtml = $markTag.$part;
-            $html = str_replace($markTag, $newHtml, $html);
-        } else {
-            // For old and new ec-cube version
-            $search = '/(<div id="relative_category_box")|(<div class="relative_cat")/';
-            $newHtml = $part.'<div id="relative_category_box" class="relative_cat"';
-            $html = preg_replace($search, $newHtml, $html);
-        }
-
-        return $html;
     }
 
     /**

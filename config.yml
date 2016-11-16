@@ -1,5 +1,5 @@
 name: Maker
-event: Maker
+event: MakerEvent
 code: Maker
 version: 1.0.0
 service: 

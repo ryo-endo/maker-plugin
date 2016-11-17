@@ -88,7 +88,7 @@ class MakerEvent
             return;
         }
         /* @var MakerLegacy $makerEvent */
-        $makerEvent = $this->app['eccube.plugin.maker.event.maker_legancy'];
+        $makerEvent = $this->app['eccube.plugin.maker.event.maker_legacy'];
         $makerEvent->onAdminProduct($event);
     }
 
@@ -105,7 +105,7 @@ class MakerEvent
             return;
         }
         /* @var MakerLegacy $makerEvent */
-        $makerEvent = $this->app['eccube.plugin.maker.event.maker_legancy'];
+        $makerEvent = $this->app['eccube.plugin.maker.event.maker_legacy'];
         $makerEvent->onRenderProductsDetailBefore($event);
     }
 

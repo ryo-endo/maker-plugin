@@ -116,6 +116,6 @@ class MakerEvent
      */
     private function supportNewHookPoint()
     {
-        return Version::isSupportGetInstanceFunction();
+        return Version::isSupport();
     }
 }

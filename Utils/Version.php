@@ -43,6 +43,7 @@ class Version
      *
      * @param string $version
      * @param string $operation
+     *
      * @return bool|int|mixed|void
      */
     public static function isSupport($version = '3.0.9', $operation = '>=')

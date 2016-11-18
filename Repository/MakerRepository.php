@@ -32,7 +32,6 @@ class MakerRepository extends EntityRepository
     public function save(Maker $Maker)
     {
         $em = $this->getEntityManager();
-        $em->getConnection()->beginTransaction();
         try {
             if (!$Maker->getId()) {
                 $rank = $this->createQueryBuilder('m')
@@ -55,12 +54,8 @@ class MakerRepository extends EntityRepository
             }
 
             $em->persist($Maker);
-            $em->flush();
-
-            $em->getConnection()->commit();
+            $em->flush($Maker);
         } catch (\Exception $e) {
-            $em->getConnection()->rollBack();
-
             return false;
         }
 
@@ -77,16 +72,11 @@ class MakerRepository extends EntityRepository
     public function delete(Maker $Maker)
     {
         $em = $this->getEntityManager();
-        $em->getConnection()->beginTransaction();
         try {
             $Maker->setDelFlg(Constant::ENABLED);
             $em->persist($Maker);
             $em->flush($Maker);
-
-            $em->getConnection()->commit();
         } catch (\Exception $e) {
-            $em->getConnection()->rollBack();
-
             return false;
         }
 
@@ -104,7 +94,6 @@ class MakerRepository extends EntityRepository
      */
     public function moveMakerRank(array $arrRank)
     {
-        $this->getEntityManager()->beginTransaction();
         $arrMoveRank = array();
         try {
             foreach ($arrRank as $makerId => $rank) {
@@ -116,11 +105,9 @@ class MakerRepository extends EntityRepository
                 $arrMoveRank[$makerId] = $rank;
                 $Maker->setRank($rank);
                 $this->getEntityManager()->persist($Maker);
+                $this->getEntityManager()->flush($Maker);
             }
-            $this->getEntityManager()->flush();
-            $this->getEntityManager()->commit();
         } catch (\Exception $e) {
-            $this->getEntityManager()->rollback();
             throw $e;
         }
 

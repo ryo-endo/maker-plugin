@@ -14,7 +14,7 @@ use Plugin\Maker\Event\Maker;
 use Plugin\Maker\Event\MakerLegacy;
 use Plugin\Maker\Form\Extension\Admin\ProductMakerTypeExtension;
 use Plugin\Maker\Form\Type\MakerType;
-use Plugin\Maker\Utils\Version;
+use Plugin\Maker\Util\Version;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\Translation\Translator;

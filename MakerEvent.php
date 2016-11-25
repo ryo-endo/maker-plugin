@@ -15,7 +15,7 @@ use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Plugin\Maker\Event\Maker;
 use Plugin\Maker\Event\MakerLegacy;
-use Plugin\Maker\Utils\Version;
+use Plugin\Maker\Util\Version;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**

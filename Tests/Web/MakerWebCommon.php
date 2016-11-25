@@ -14,7 +14,7 @@ use Eccube\Common\Constant;
 use Eccube\Tests\Web\Admin\AbstractAdminWebTestCase;
 use Faker\Generator;
 use Plugin\Maker\Entity\Maker;
-use Plugin\Maker\Utils\Version;
+use Plugin\Maker\Util\Version;
 
 /**
  * Class MakerWebTestCase

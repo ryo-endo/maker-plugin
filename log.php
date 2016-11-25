@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-use Plugin\Maker\Utils\Version;
+use Plugin\Maker\Util\Version;
 
 if (Version::isSupportLogFunction()) {
     return;

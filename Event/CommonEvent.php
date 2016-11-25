@@ -24,7 +24,7 @@ class CommonEvent
     /**
      * @var string target render on the front-end
      */
-    protected $makerTag = '<!--# MakerPlugin-Tag #-->';
+    protected $makerTag = '<!--# maker-plugin-tag #-->';
 
     /**
      * AbstractEvent constructor.

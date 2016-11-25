@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\Maker\Utils;
+namespace Plugin\Maker\Util;
 
 use Eccube\Common\Constant;
 

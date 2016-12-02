@@ -14,10 +14,9 @@ use Plugin\Maker\Event\Maker;
 use Plugin\Maker\Event\MakerLegacy;
 use Plugin\Maker\Form\Extension\Admin\ProductMakerTypeExtension;
 use Plugin\Maker\Form\Type\MakerType;
-use Plugin\Maker\Util\Version;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
-use Symfony\Component\Translation\Translator;
+use Eccube\Common\Constant;
 
 // include log functions (for 3.0.0 - 3.0.11)
 require_once(__DIR__.'/../log.php');
@@ -32,6 +31,13 @@ class MakerServiceProvider implements ServiceProviderInterface
      */
     public function register(BaseApplication $app)
     {
+        // 管理画面定義
+        $admin = $app['controllers_factory'];
+        // 強制SSL
+        if ($app['config']['force_ssl'] == Constant::ENABLED) {
+            $admin->requireHttps();
+        }
+
         // メーカーテーブル用リポジトリ
         $app['eccube.plugin.maker.repository.maker'] = $app->share(function () use ($app) {
             return $app['orm.em']->getRepository('Plugin\Maker\Entity\Maker');
@@ -52,17 +58,17 @@ class MakerServiceProvider implements ServiceProviderInterface
         });
 
         // 一覧・登録・修正
-        $app->match('/'.$app['config']['admin_route'].'/product/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
+        $app->match('/'.$app['config']['admin_route'].'/plugin/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
             ->value('id', null)->assert('id', '\d+|')
-            ->bind('admin_maker');
+            ->bind('admin_plugin_maker_index');
 
         // 削除
-        $app->delete('/'.$app['config']['admin_route'].'/product/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
+        $app->delete('/'.$app['config']['admin_route'].'/plugin/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
             ->value('id', null)->assert('id', '\d+|')
-            ->bind('admin_maker_delete');
+            ->bind('admin_plugin_maker_delete');
 
-        $app->post('/'.$app['config']['admin_route'].'/product/maker/rank/move', '\\Plugin\\Maker\\Controller\\MakerController::moveRank')
-            ->bind('admin_product_maker_rank_move');
+        $app->post('/'.$app['config']['admin_route'].'/plugin/maker/rank/move', '\\Plugin\\Maker\\Controller\\MakerController::moveRank')
+            ->bind('admin_plugin_maker_move_rank');
 
         // 型登録
         $app['form.types'] = $app->share($app->extend('form.types', function ($types) use ($app) {
@@ -79,20 +85,14 @@ class MakerServiceProvider implements ServiceProviderInterface
         }));
 
         // メッセージ登録
-        $app['translator'] = $app->share($app->extend('translator', function (Translator $translator, \Silex\Application $app) {
-            $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
-            if (file_exists($file)) {
-                $translator->addResource('yaml', $file, $app['locale']);
-            }
-
-            return $translator;
-        }));
+        $file = __DIR__.'/../Resource/locale/message.'.$app['locale'].'.yml';
+        $app['translator']->addResource('yaml', $file, $app['locale']);
 
         // メニュー登録
         $app['config'] = $app->share($app->extend('config', function ($config) {
             $addNavi['id'] = 'maker';
             $addNavi['name'] = 'メーカー管理';
-            $addNavi['url'] = 'admin_maker';
+            $addNavi['url'] = 'admin_plugin_maker_index';
 
             $nav = $config['nav'];
             foreach ($nav as $key => $val) {
@@ -107,7 +107,7 @@ class MakerServiceProvider implements ServiceProviderInterface
         }));
 
         // initialize logger (for 3.0.0 - 3.0.8)
-        if (!Version::isSupportGetInstanceFunction()) {
+        if (!method_exists('Eccube\Application', 'getInstance')) {
             eccube_log_init($app);
         }
     }

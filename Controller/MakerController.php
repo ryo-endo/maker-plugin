@@ -58,12 +58,12 @@ class MakerController extends AbstractController
 
             if ($status) {
                 log_info('Maker add/edit success', array('Maker id' => $TargetMaker->getId()));
-                $app->addSuccess('admin.maker.save.complete', 'admin');
+                $app->addSuccess('admin.plugin.maker.save.complete', 'admin');
 
-                return $app->redirect($app->url('admin_maker'));
+                return $app->redirect($app->url('admin_plugin_maker_index'));
             } else {
                 log_info('Maker add/edit fail!', array('Maker id' => $TargetMaker->getId()));
-                $app->addError('admin.maker.save.error', 'admin');
+                $app->addError('admin.plugin.maker.save.error', 'admin');
             }
         }
 
@@ -102,7 +102,7 @@ class MakerController extends AbstractController
         // Id valid
         if (!$id) {
             log_info('The maker not found!', array('Maker id' => $id));
-            $app->addError('admin.maker.not_found', 'admin');
+            $app->addError('admin.plugin.maker.not_found', 'admin');
 
             return $app->redirect($app->url('admin_maker'));
         }
@@ -120,13 +120,13 @@ class MakerController extends AbstractController
 
         if ($status === true) {
             log_info('The maker delete success!', array('Maker id' => $id));
-            $app->addSuccess('admin.maker.delete.complete', 'admin');
+            $app->addSuccess('admin.plugin.maker.delete.complete', 'admin');
         } else {
             log_info('The maker delete fail!', array('Maker id' => $id));
-            $app->addError('admin.maker.delete.error', 'admin');
+            $app->addError('admin.plugin.maker.delete.error', 'admin');
         }
 
-        return $app->redirect($app->url('admin_maker'));
+        return $app->redirect($app->url('admin_plugin_maker_index'));
     }
 
     /**

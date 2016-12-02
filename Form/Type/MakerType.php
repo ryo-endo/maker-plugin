@@ -42,9 +42,9 @@ class MakerType extends AbstractType
         $builder
             ->add('name', 'text', array(
                 'label' => 'メーカー名',
-                'required' => false,
+                'required' => true,
                 'constraints' => array(
-                    new Assert\NotBlank(array('message' => $this->app->trans('admin.maker.blank.error'))),
+                    new Assert\NotBlank(array('message' => $this->app->trans('admin.plugin.maker.blank.error'))),
                 ),
             ))
             ->add('id', 'hidden', array());

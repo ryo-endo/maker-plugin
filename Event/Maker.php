@@ -33,7 +33,7 @@ class Maker extends CommonEvent
      *
      * @param EventArgs $event
      */
-    public function onAdminProductInit(EventArgs $event)
+    public function onAdminProductEditInitialize(EventArgs $event)
     {
         log_info('Event: product maker hook into the product render start.');
         /**
@@ -66,7 +66,7 @@ class Maker extends CommonEvent
                 ),
                 'mapped' => false,
                 'attr' => array(
-                    'placeholder' => $this->app->trans('admin.maker.placeholder.url'),
+                    'placeholder' => $this->app->trans('admin.plugin.maker.placeholder.url'),
                 ),
             ));
 
@@ -106,7 +106,7 @@ class Maker extends CommonEvent
      *
      * @param EventArgs $eventArgs
      */
-    public function onAdminProductComplete(EventArgs $eventArgs)
+    public function onAdminProductEditComplete(EventArgs $eventArgs)
     {
         log_info('Event: product maker hook into the product management complete start.');
         /**
@@ -165,7 +165,7 @@ class Maker extends CommonEvent
      *
      * @param TemplateEvent $event
      */
-    public function onRenderProductsDetail(TemplateEvent $event)
+    public function onRenderProductDetail(TemplateEvent $event)
     {
         log_info('Event: product maker hook into the product detail start.');
 

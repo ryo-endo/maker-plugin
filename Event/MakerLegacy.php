@@ -29,7 +29,7 @@ class MakerLegacy extends CommonEvent
      *
      * @param FilterResponseEvent $event
      */
-    public function onAdminProduct(FilterResponseEvent $event)
+    public function onRenderAdminProduct(FilterResponseEvent $event)
     {
         log_info('EventLegacy: product maker hook into product management start');
         $app = $this->app;
@@ -113,7 +113,7 @@ class MakerLegacy extends CommonEvent
      *
      * @param FilterResponseEvent $event
      */
-    public function onRenderProductsDetailBefore(FilterResponseEvent $event)
+    public function onRenderProductDetailBefore(FilterResponseEvent $event)
     {
         log_info('EventLegacy: product maker hook into the product detail start.');
         $request = $event->getRequest();

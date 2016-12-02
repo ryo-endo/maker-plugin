@@ -1,17 +1,17 @@
 # New hookpoint for version >= 3.0.9
 admin.product.edit.initialize:
-    - [onAdminProductInit, NORMAL]
+    - [onAdminProductEditInitialize, NORMAL]
 admin.product.edit.complete:
-    - [onAdminProductComplete, NORMAL]
+    - [onAdminProductEditComplete, NORMAL]
 
 Product/detail.twig:
-    - [onRenderProductsDetail, NORMAL]
+    - [onRenderProductDetail, NORMAL]
 
 # deprecated event (for v3.0.0 - 3.0.8)
 eccube.event.render.admin_product_product_new.before:
-    - [onAdminProduct, NORMAL]
+    - [onRenderAdminProduct, NORMAL]
 eccube.event.render.admin_product_product_edit.before:
-    - [onAdminProduct, NORMAL]
+    - [onRenderAdminProduct, NORMAL]
 
 eccube.event.render.product_detail.before:
-    - [onRenderProductsDetailBefore, NORMAL]
+    - [onRenderProductDetailBefore, NORMAL]

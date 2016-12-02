@@ -42,11 +42,11 @@ class MakerEvent
      *
      * @param EventArgs $event
      */
-    public function onAdminProductInit(EventArgs $event)
+    public function onAdminProductEditInitialize(EventArgs $event)
     {
         /* @var Maker $makerEvent */
         $makerEvent = $this->app['eccube.plugin.maker.event.maker'];
-        $makerEvent->onAdminProductInit($event);
+        $makerEvent->onAdminProductEditInitialize($event);
     }
 
     /**
@@ -55,11 +55,11 @@ class MakerEvent
      *
      * @param EventArgs $event
      */
-    public function onAdminProductComplete(EventArgs $event)
+    public function onAdminProductEditComplete(EventArgs $event)
     {
         /* @var Maker $makerEvent */
         $makerEvent = $this->app['eccube.plugin.maker.event.maker'];
-        $makerEvent->onAdminProductComplete($event);
+        $makerEvent->onAdminProductEditComplete($event);
     }
 
     /**
@@ -68,11 +68,11 @@ class MakerEvent
      *
      * @param TemplateEvent $event
      */
-    public function onRenderProductsDetail(TemplateEvent $event)
+    public function onRenderProductDetail(TemplateEvent $event)
     {
         /* @var Maker $makerEvent */
         $makerEvent = $this->app['eccube.plugin.maker.event.maker'];
-        $makerEvent->onRenderProductsDetail($event);
+        $makerEvent->onRenderProductDetail($event);
     }
 
     /**
@@ -82,14 +82,14 @@ class MakerEvent
      *
      * @deprecated for since v3.0.0, to be removed in 3.1
      */
-    public function onAdminProduct(FilterResponseEvent $event)
+    public function onRenderAdminProduct(FilterResponseEvent $event)
     {
         if ($this->supportNewHookPoint()) {
             return;
         }
         /* @var MakerLegacy $makerEvent */
         $makerEvent = $this->app['eccube.plugin.maker.event.maker_legacy'];
-        $makerEvent->onAdminProduct($event);
+        $makerEvent->onRenderAdminProduct($event);
     }
 
     /**
@@ -99,14 +99,14 @@ class MakerEvent
      *
      * @deprecated for since v3.0.0, to be removed in 3.1
      */
-    public function onRenderProductsDetailBefore(FilterResponseEvent $event)
+    public function onRenderProductDetailBefore(FilterResponseEvent $event)
     {
         if ($this->supportNewHookPoint()) {
             return;
         }
         /* @var MakerLegacy $makerEvent */
         $makerEvent = $this->app['eccube.plugin.maker.event.maker_legacy'];
-        $makerEvent->onRenderProductsDetailBefore($event);
+        $makerEvent->onRenderProductDetailBefore($event);
     }
 
     /**

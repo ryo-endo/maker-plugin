@@ -59,7 +59,7 @@ class ProductMakerTypeExtension extends AbstractTypeExtension
                 ),
                 'mapped' => false,
                 'attr' => array(
-                    'placeholder' => $this->app->trans('admin.maker.placeholder.url'),
+                    'placeholder' => $this->app->trans('admin.plugin.maker.placeholder.url'),
                 ),
             ));
     }

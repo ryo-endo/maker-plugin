@@ -104,7 +104,7 @@ class MakerController extends AbstractController
             log_info('The maker not found!', array('Maker id' => $id));
             $app->addError('admin.plugin.maker.not_found', 'admin');
 
-            return $app->redirect($app->url('admin_maker'));
+            return $app->redirect($app->url('admin_plugin_maker_index'));
         }
 
         $repos = $app['eccube.plugin.maker.repository.maker'];

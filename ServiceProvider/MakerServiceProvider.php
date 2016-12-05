@@ -58,17 +58,19 @@ class MakerServiceProvider implements ServiceProviderInterface
         });
 
         // 一覧・登録・修正
-        $app->match('/'.$app['config']['admin_route'].'/plugin/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
+        $admin->match('/plugin/maker/{id}', '\\Plugin\\Maker\\Controller\\MakerController::index')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_plugin_maker_index');
 
         // 削除
-        $app->delete('/'.$app['config']['admin_route'].'/plugin/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
+        $admin->delete('/plugin/maker/{id}/delete', '\\Plugin\\Maker\\Controller\\MakerController::delete')
             ->value('id', null)->assert('id', '\d+|')
             ->bind('admin_plugin_maker_delete');
 
-        $app->post('/'.$app['config']['admin_route'].'/plugin/maker/rank/move', '\\Plugin\\Maker\\Controller\\MakerController::moveRank')
+        $admin->post('/plugin/maker/rank/move', '\\Plugin\\Maker\\Controller\\MakerController::moveRank')
             ->bind('admin_plugin_maker_move_rank');
+
+        $app->mount('/'.trim($app['config']['admin_route'], '/').'/', $admin);
 
         // 型登録
         $app['form.types'] = $app->share($app->extend('form.types', function ($types) use ($app) {

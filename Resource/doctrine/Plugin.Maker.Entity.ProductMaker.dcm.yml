@@ -25,7 +25,7 @@ Plugin\Maker\Entity\ProductMaker:
         update_date:
             type: datetime
             nullable: false
-    oneToOne:
+    manyToOne:
         Maker:
             targetEntity: Plugin\Maker\Entity\Maker
             joinColumn:

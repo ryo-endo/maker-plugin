@@ -1,7 +1,7 @@
 name: Maker
-event: Maker
+event: MakerEvent
 code: Maker
-version: 0.0.2
+version: 1.0.0
 service: 
     - MakerServiceProvider
 orm.path:

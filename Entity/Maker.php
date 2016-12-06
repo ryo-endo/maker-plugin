@@ -1,21 +1,26 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Maker plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Plugin\Maker\Entity;
 
-class Maker extends \Eccube\Entity\AbstractEntity
-{
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Eccube\Entity\AbstractEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+/**
+ * Class Maker.
+ */
+class Maker extends AbstractEntity
+{
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -25,12 +30,12 @@ class Maker extends \Eccube\Entity\AbstractEntity
     private $name;
 
     /**
-     * @var integer
+     * @var int
      */
     private $rank;
 
     /**
-     * @var integer
+     * @var int
      */
     private $del_flg;
 
@@ -45,16 +50,10 @@ class Maker extends \Eccube\Entity\AbstractEntity
     private $update_date;
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     * Set maker id
+     * Set maker id.
      *
-     * @param  string $id
+     * @param string $id
+     *
      * @return Maker
      */
     public function setId($id)
@@ -65,9 +64,9 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -75,7 +74,7 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -85,9 +84,10 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Set name
+     * Set name.
      *
-     * @param  string $name
+     * @param string $name
+     *
      * @return Maker
      */
     public function setName($name)
@@ -98,9 +98,9 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Get rank
+     * Get rank.
      *
-     * @return integer
+     * @return int
      */
     public function getRank()
     {
@@ -108,9 +108,10 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Set rank
+     * Set rank.
      *
-     * @param  integer $rank
+     * @param int $rank
+     *
      * @return Maker
      */
     public function setRank($rank)
@@ -121,10 +122,11 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Set del_flg
+     * Set del_flg.
      *
-     * @param  integer $delFlg
-     * @return Payment
+     * @param int $delFlg
+     *
+     * @return Maker
      */
     public function setDelFlg($delFlg)
     {
@@ -134,9 +136,9 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Get del_flg
+     * Get del_flg.
      *
-     * @return integer
+     * @return int
      */
     public function getDelFlg()
     {
@@ -144,10 +146,11 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Set create_date
+     * Set create_date.
      *
-     * @param  \DateTime $createDate
-     * @return Payment
+     * @param \DateTime $createDate
+     *
+     * @return Maker
      */
     public function setCreateDate($createDate)
     {
@@ -157,7 +160,7 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Get create_date
+     * Get create_date.
      *
      * @return \DateTime
      */
@@ -167,10 +170,11 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Set update_date
+     * Set update_date.
      *
-     * @param  \DateTime $updateDate
-     * @return Payment
+     * @param \DateTime $updateDate
+     *
+     * @return Maker
      */
     public function setUpdateDate($updateDate)
     {
@@ -180,7 +184,7 @@ class Maker extends \Eccube\Entity\AbstractEntity
     }
 
     /**
-     * Get update_date
+     * Get update_date.
      *
      * @return \DateTime
      */
@@ -189,4 +193,15 @@ class Maker extends \Eccube\Entity\AbstractEntity
         return $this->update_date;
     }
 
+    /**
+     * Unique check.
+     *
+     * @param ClassMetadata $metadata
+     */
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addConstraint(new UniqueEntity(array(
+            'fields' => 'name',
+        )));
+    }
 }

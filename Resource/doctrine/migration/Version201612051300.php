@@ -1,13 +1,12 @@
 <?php
 /*
-* This file is part of EC-CUBE
-*
-* Copyright(c) 2000-2015 LOCKON CO.,LTD. All Rights Reserved.
-* http://www.lockon.co.jp/
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Maker plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace DoctrineMigrations;
 
@@ -17,9 +16,8 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version201511201300 extends AbstractMigration
+class Version201612051300 extends AbstractMigration
 {
-
     /**
      * @param Schema $schema
      */
@@ -27,8 +25,8 @@ class Version201511201300 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $table = $schema->getTable('plg_product_maker');
-        if (!$table->hasColumn('maker_url')) {
-            $table->addColumn('maker_url', 'text', array('notnull' => true));
+        if ($table->hasIndex('UNIQ_F3A9167968DA5EC3')) {
+            $table->dropIndex('UNIQ_F3A9167968DA5EC3');
         }
     }
 
@@ -39,5 +37,4 @@ class Version201511201300 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
     }
-
 }

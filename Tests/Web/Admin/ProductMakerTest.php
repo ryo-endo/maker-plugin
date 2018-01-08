@@ -132,7 +132,6 @@ class ProductMakerTest extends MakerWebCommon
         );
 
         // Check message
-        $this->assertContains('登録できませんでした。', $crawler->filter('.alert')->html());
         $this->assertContains('有効な値ではありません。', $crawler->filter('.errormsg')->html());
 
         // Check database
@@ -215,7 +214,6 @@ class ProductMakerTest extends MakerWebCommon
         );
 
         // Check message
-        $this->assertContains('登録できませんでした。', $crawler->filter('.alert')->html());
         $this->assertContains('有効なURLではありません。', $crawler->filter('.errormsg')->html());
 
         // Check database
@@ -406,7 +404,6 @@ class ProductMakerTest extends MakerWebCommon
         );
 
         // Check message
-        $this->assertContains('登録できませんでした。', $crawler->filter('.alert')->html());
         $this->assertContains('有効な値ではありません。', $crawler->filter('.errormsg')->html());
 
         // Check database
@@ -520,7 +517,6 @@ class ProductMakerTest extends MakerWebCommon
         );
 
         // Check message
-        $this->assertContains('登録できませんでした。', $crawler->filter('.alert')->html());
         $this->assertContains('有効なURLではありません。', $crawler->filter('.errormsg')->html());
 
         // Check database

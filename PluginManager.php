@@ -32,7 +32,6 @@ class PluginManager extends AbstractPluginManager
      */
     public function uninstall($config, $app)
     {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code'], 0);
     }
 
     /**
@@ -41,7 +40,6 @@ class PluginManager extends AbstractPluginManager
      */
     public function enable($config, $app)
     {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code']);
     }
 
     /**
@@ -58,6 +56,5 @@ class PluginManager extends AbstractPluginManager
      */
     public function update($config, $app)
     {
-        $this->migrationSchema($app, __DIR__.'/Resource/doctrine/migration', $config['code']);
     }
 }

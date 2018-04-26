@@ -10,31 +10,30 @@
 
 namespace Plugin\Maker;
 
-use Eccube\Application;
 use Eccube\Event\EventArgs;
 use Eccube\Event\TemplateEvent;
 use Plugin\Maker\Event\Maker;
-use Plugin\Maker\Event\MakerLegacy;
-use Plugin\Maker\Util\Version;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class MakerEvent.
  */
-class MakerEvent
+class MakerEvent implements EventSubscriberInterface
 {
     /**
-     * @var Application
+     * @var Maker
      */
-    private $app;
+    protected $makerEvent;
 
     /**
      * MakerEvent constructor.
-     * @param Application $app
+     *
+     * @param Maker $makerEvent
      */
-    public function __construct($app)
-    {
-        $this->app = $app;
+    public function __construct(
+        Maker $makerEvent
+    ) {
+        $this->makerEvent = $makerEvent;
     }
     /**
      * New event function on version >= 3.0.9 (new hook point).
@@ -44,9 +43,7 @@ class MakerEvent
      */
     public function onAdminProductEditInitialize(EventArgs $event)
     {
-        /* @var Maker $makerEvent */
-        $makerEvent = $this->app['eccube.plugin.maker.event.maker'];
-        $makerEvent->onAdminProductEditInitialize($event);
+        $this->makerEvent->onAdminProductEditInitialize($event);
     }
 
     /**
@@ -57,9 +54,7 @@ class MakerEvent
      */
     public function onAdminProductEditComplete(EventArgs $event)
     {
-        /* @var Maker $makerEvent */
-        $makerEvent = $this->app['eccube.plugin.maker.event.maker'];
-        $makerEvent->onAdminProductEditComplete($event);
+        $this->makerEvent->onAdminProductEditComplete($event);
     }
 
     /**
@@ -70,52 +65,20 @@ class MakerEvent
      */
     public function onRenderProductDetail(TemplateEvent $event)
     {
-        /* @var Maker $makerEvent */
-        $makerEvent = $this->app['eccube.plugin.maker.event.maker'];
-        $makerEvent->onRenderProductDetail($event);
+        $this->makerEvent->onRenderProductDetail($event);
     }
 
     /**
-     * Add product trigger.
+     * {@inheritdoc}
      *
-     * @param FilterResponseEvent $event
-     *
-     * @deprecated for since v3.0.0, to be removed in 3.1
+     * @return array
      */
-    public function onRenderAdminProduct(FilterResponseEvent $event)
+    public static function getSubscribedEvents()
     {
-        if ($this->supportNewHookPoint()) {
-            return;
-        }
-        /* @var MakerLegacy $makerEvent */
-        $makerEvent = $this->app['eccube.plugin.maker.event.maker_legacy'];
-        $makerEvent->onRenderAdminProduct($event);
-    }
-
-    /**
-     * Product detail render (front).
-     *
-     * @param FilterResponseEvent $event
-     *
-     * @deprecated for since v3.0.0, to be removed in 3.1
-     */
-    public function onRenderProductDetailBefore(FilterResponseEvent $event)
-    {
-        if ($this->supportNewHookPoint()) {
-            return;
-        }
-        /* @var MakerLegacy $makerEvent */
-        $makerEvent = $this->app['eccube.plugin.maker.event.maker_legacy'];
-        $makerEvent->onRenderProductDetailBefore($event);
-    }
-
-    /**
-     * v3.0.9以降のフックポイントに対応しているのか.
-     *
-     * @return bool
-     */
-    private function supportNewHookPoint()
-    {
-        return Version::isSupport();
+        return [
+            'admin.product.edit.initialize' => [['onAdminProductEditInitialize', 10]],
+            'admin.product.edit.complete' => [['onAdminProductEditComplete', 10]],
+            'Product/detail.twig' => [['onRenderProductDetail', 10]],
+        ];
     }
 }

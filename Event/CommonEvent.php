@@ -9,7 +9,10 @@
  */
 namespace Plugin\Maker\Event;
 
-use Eccube\Application;
+use Symfony\Component\Translation\TranslatorInterface;
+use Plugin\Maker\Repository\MakerRepository;
+use Plugin\Maker\Repository\ProductMakerRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class AbstractEvent.
@@ -17,22 +20,56 @@ use Eccube\Application;
 class CommonEvent
 {
     /**
-     * @var Application
-     */
-    protected $app;
-
-    /**
      * @var string target render on the front-end
      */
     protected $makerTag = '<!--# maker-plugin-tag #-->';
 
     /**
-     * AbstractEvent constructor.
-     * @param \Silex\Application $app
+     * @var TranslatorInterface
      */
-    public function __construct($app)
-    {
-        $this->app = $app;
+    protected $translator;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
+
+    /**
+     * @var MakerRepository
+     */
+    protected $makerRepository;
+
+    /**
+     * @var ProductMakerRepository
+     */
+    protected $productMakerRepository;
+
+    /**
+     * @var \Twig_Environment
+     */
+    protected $twigEnvironment;
+
+    /**
+     * CommonEvent constructor.
+     *
+     * @param \Twig_Environment $twigEnvironment
+     * @param TranslatorInterface $translator
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     * @param MakerRepository $makerRepository
+     * @param ProductMakerRepository $productMakerRepository
+     */
+    public function __construct(
+        \Twig_Environment $twigEnvironment,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager,
+        MakerRepository $makerRepository,
+        ProductMakerRepository $productMakerRepository
+    ) {
+        $this->twigEnvironment = $twigEnvironment;
+        $this->translator = $translator;
+        $this->entityManager = $entityManager;
+        $this->makerRepository = $makerRepository;
+        $this->productMakerRepository = $productMakerRepository;
     }
 
     /**
@@ -55,8 +92,8 @@ class CommonEvent
             $html = str_replace($markTag, $newHtml, $html);
         } else {
             // For old and new ec-cube version
-            $search = '/(<div id="relative_category_box")|(<div class="relative_cat")/';
-            $newHtml = $part.'<div id="relative_category_box" class="relative_cat"';
+            $search = '/(<div class="ec-productRole__category")/';
+            $newHtml = $part.'<div class="ec-productRole__category")';
             $html = preg_replace($search, $newHtml, $html);
         }
 

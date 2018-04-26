@@ -11,12 +11,15 @@
 namespace Plugin\Maker\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Eccube\Application;
 use Eccube\Controller\AbstractController;
 use Plugin\Maker\Entity\Maker;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Plugin\Maker\Repository\MakerRepository;
+use Plugin\Maker\Form\Type\MakerType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Eccube\Common\Constant;
 
 /**
  * Class MakerController.
@@ -24,124 +27,121 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MakerController extends AbstractController
 {
     /**
+     * @var MakerRepository
+     */
+    protected $makerRepository;
+
+    /**
+     * MakerController constructor.
+     *
+     * @param MakerRepository $makerRepository
+     */
+    public function __construct(
+        MakerRepository $makerRepository
+    ) {
+        $this->makerRepository = $makerRepository;
+    }
+
+    /**
      * List, add, edit maker.
      *
-     * @param Application $app
      * @param Request     $request
      * @param null        $id
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     *
+     * @Route("/%eccube_admin_route%/plugin/maker/{id}", name="admin_plugin_maker_index", requirements={"id":"\d+"}, defaults={"index":0})
      */
-    public function index(Application $app, Request $request, $id = null)
+    public function index(Request $request, $id = null)
     {
-        $repos = $app['eccube.plugin.maker.repository.maker'];
-
         $TargetMaker = new Maker();
 
         if ($id) {
-            $TargetMaker = $repos->find($id);
+            $TargetMaker = $this->makerRepository->find($id);
             if (!$TargetMaker) {
-                log_error('The Maker not found!', array('Maker id' => $id));
+                log_error('The Maker not found!', ['Maker id' => $id]);
                 throw new NotFoundHttpException();
             }
         }
 
-        $form = $app['form.factory']
-            ->createBuilder('admin_maker', $TargetMaker)
+        $form = $this->formFactory
+            ->createBuilder(MakerType::class, $TargetMaker)
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             log_info('Maker add/edit start.');
-            $status = $repos->save($TargetMaker);
+            $status = $this->makerRepository->save($TargetMaker);
 
             if ($status) {
-                log_info('Maker add/edit success', array('Maker id' => $TargetMaker->getId()));
-                $app->addSuccess('admin.plugin.maker.save.complete', 'admin');
+                log_info('Maker add/edit success', ['Maker id' => $TargetMaker->getId()]);
+                $this->addSuccess('admin.plugin.maker.save.complete', 'admin');
 
-                return $app->redirect($app->url('admin_plugin_maker_index'));
+                return $this->redirectToRoute('admin_plugin_maker_index');
             } else {
-                log_info('Maker add/edit fail!', array('Maker id' => $TargetMaker->getId()));
-                $app->addError('admin.plugin.maker.save.error', 'admin');
+                log_info('Maker add/edit fail!', ['Maker id' => $TargetMaker->getId()]);
+                $this->addError('admin.plugin.maker.save.error', 'admin');
             }
         }
 
         /**
          * @var ArrayCollection $arrMaker
          */
-        $arrMaker = $app['eccube.plugin.maker.repository.maker']->findBy(array(), array('rank' => 'DESC'));
+        $arrMaker = $this->makerRepository->findBy(['del_flg' => Constant::DISABLED], ['rank' => 'DESC']);
 
-        return $app->render('Maker/Resource/template/admin/maker.twig', array(
+        return $this->render('Maker/Resource/template/admin/maker.twig', [
             'form' => $form->createView(),
             'arrMaker' => $arrMaker,
             'TargetMaker' => $TargetMaker,
-        ));
+        ]);
     }
 
     /**
      * Delete Maker.
      *
-     * @param Application $app
-     * @param Request     $request
-     * @param int         $id
+     * @param Maker       $TargetMaker
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Method("DELETE")
+     * @Route("/%eccube_admin_route%/plugin/maker/{id}/delete", name="admin_plugin_maker_delete", requirements={"id":"\d+"})
      */
-    public function delete(Application $app, Request $request, $id = null)
+    public function delete(Maker $TargetMaker)
     {
         // Valid token
-        $this->isTokenValid($app);
+        $this->isTokenValid();
 
-        // Check request
-        if (!'POST' === $request->getMethod()) {
-            log_error('Delete with bad method!');
-            throw new BadRequestHttpException();
-        }
-
-        // Id valid
-        if (!$id) {
-            log_info('The maker not found!', array('Maker id' => $id));
-            $app->addError('admin.plugin.maker.not_found', 'admin');
-
-            return $app->redirect($app->url('admin_plugin_maker_index'));
-        }
-
-        $repos = $app['eccube.plugin.maker.repository.maker'];
-
-        $TargetMaker = $repos->find($id);
-
-        if (!$TargetMaker) {
-            log_error('The maker not found!', array('Maker id' => $id));
-            throw new NotFoundHttpException();
-        }
-
-        $status = $repos->delete($TargetMaker);
+        $status = $this->makerRepository->delete($TargetMaker);
 
         if ($status === true) {
-            log_info('The maker delete success!', array('Maker id' => $id));
-            $app->addSuccess('admin.plugin.maker.delete.complete', 'admin');
+            log_info('The maker delete success!', ['Maker id' => $TargetMaker->getId()]);
+            $this->addSuccess('admin.plugin.maker.delete.complete', 'admin');
         } else {
-            log_info('The maker delete fail!', array('Maker id' => $id));
-            $app->addError('admin.plugin.maker.delete.error', 'admin');
+            log_info('The maker delete fail!', ['Maker id' => $TargetMaker->getId()]);
+            $this->addError('admin.plugin.maker.delete.error', 'admin');
         }
 
-        return $app->redirect($app->url('admin_plugin_maker_index'));
+        return $this->redirectToRoute('admin_plugin_maker_index');
     }
 
     /**
      * Move rank with ajax.
      *
-     * @param Application $app
      * @param Request     $request
      *
      * @return bool
+     *
+     * @throws \Exception
+     *
+     * @Method("POST")
+     * @Route("admin_plugin_maker_move_rank", name="admin_plugin_maker_move_rank")
      */
-    public function moveRank(Application $app, Request $request)
+    public function moveRank(Request $request)
     {
         if ($request->isXmlHttpRequest()) {
             $arrRank = $request->request->all();
-            $arrMoved = $app['eccube.plugin.maker.repository.maker']->moveMakerRank($arrRank);
+            $arrMoved = $this->makerRepository->moveMakerRank($arrRank);
             log_info('Maker move rank', $arrMoved);
         }
 

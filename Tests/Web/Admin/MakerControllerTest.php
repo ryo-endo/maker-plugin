@@ -34,7 +34,7 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMakerRender()
     {
-        $crawler = $this->client->request('GET', $this->app->url('admin_plugin_maker_index'));
+        $crawler = $this->client->request('GET', $this->generateUrl('admin_plugin_maker_index'));
         $this->assertContains('データはありません', $crawler->filter('.box')->html());
     }
 
@@ -48,7 +48,7 @@ class MakerControllerTest extends MakerWebCommon
             $this->createMaker($i);
         }
 
-        $crawler = $this->client->request('GET', $this->app->url('admin_plugin_maker_index'));
+        $crawler = $this->client->request('GET', $this->generateUrl('admin_plugin_maker_index'));
         $number = count($crawler->filter('.tableish .item_box'));
 
         $this->actual = $number;
@@ -65,12 +65,11 @@ class MakerControllerTest extends MakerWebCommon
         $formData['name'] = '';
         $crawler = $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_index'),
-            array('admin_maker' => $formData)
+            $this->generateUrl('admin_plugin_maker_index'),
+            ['maker' => $formData]
         );
-
         // Check message
-        $this->assertContains('※ メーカー名が入力されていません。', $crawler->filter('.modal-dialog .attention')->html());
+        $this->assertContains('メーカー名が入力されていません。', $crawler->filter('#form1 .form-error-message')->html());
     }
 
     /**
@@ -84,12 +83,12 @@ class MakerControllerTest extends MakerWebCommon
         $formData['name'] = $Maker->getName();
         $crawler = $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_index'),
-            array('admin_maker' => $formData)
+            $this->generateUrl('admin_plugin_maker_index'),
+            ['maker' => $formData]
         );
 
         // Check message
-        $this->assertContains('※ 既に使用されています。', $crawler->filter('.modal-dialog .attention')->html());
+        $this->assertContains('既に使用されています。', $crawler->filter('#form1 .form-error-message')->html());
     }
 
     /**
@@ -100,12 +99,12 @@ class MakerControllerTest extends MakerWebCommon
         $formData = $this->createMakerFormData();
         $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_index'),
-            array('admin_maker' => $formData)
+            $this->generateUrl('admin_plugin_maker_index'),
+            ['maker' => $formData]
         );
 
         // Check redirect
-        $this->assertTrue($this->client->getResponse()->isRedirect($this->app->url('admin_plugin_maker_index')));
+        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_plugin_maker_index')));
 
         /**
          * @var Crawler $crawler
@@ -133,12 +132,12 @@ class MakerControllerTest extends MakerWebCommon
          */
         $crawler = $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_index', array('id' => $Maker->getId())),
-            array('admin_maker' => $formData)
+            $this->generateUrl('admin_plugin_maker_index', ['id' => $Maker->getId()]),
+            ['maker' => $formData]
         );
 
         // Check message
-        $this->assertContains('※ メーカー名が入力されていません。', $crawler->filter('.modal-dialog .attention')->html());
+        $this->assertContains('メーカー名が入力されていません。', $crawler->filter('#form1 .form-error-message')->html());
     }
 
     /**
@@ -157,12 +156,12 @@ class MakerControllerTest extends MakerWebCommon
          */
         $crawler = $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_index', array('id' => $Maker->getId())),
-            array('admin_maker' => $formData)
+            $this->generateUrl('admin_plugin_maker_index', ['id' => $Maker->getId()]),
+            ['maker' => $formData]
         );
 
         // Check message
-        $this->assertContains('※ 既に使用されています。', $crawler->filter('.modal-dialog .attention')->html());
+        $this->assertContains('既に使用されています。', $crawler->filter('#form1 .form-error-message')->html());
     }
 
     /**
@@ -170,16 +169,17 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMakerEditIdIsNotFound()
     {
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
         $Maker = $this->createMaker(1);
         $editId = $Maker->getId() + 1;
         $formData = $this->createMakerFormData($editId);
 
         $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_index', array('id' => $editId)),
-            array('admin_maker' => $formData)
+            $this->generateUrl('admin_plugin_maker_index', ['id' => $editId]),
+            ['_maker' => $formData]
         );
+
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -192,12 +192,12 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_index', array('id' => $Maker->getId())),
-            array('admin_maker' => $formData)
+            $this->generateUrl('admin_plugin_maker_index', ['id' => $Maker->getId()]),
+            ['maker' => $formData]
         );
 
         // Check redirect
-        $this->assertTrue($this->client->getResponse()->isRedirect($this->app->url('admin_plugin_maker_index')));
+        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_plugin_maker_index')));
 
         $crawler = $this->client->followRedirect();
         // Check message
@@ -213,14 +213,14 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMakerDeleteGetMethod()
     {
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException');
         $Maker = $this->createMaker();
 
         $this->client->request(
             'GET',
-            $this->app->url('admin_plugin_maker_delete', array('id' => $Maker->getId()))
+            $this->generateUrl('admin_plugin_maker_delete', ['id' => $Maker->getId()])
         );
-        $this->fail('No route found for "GET /admin/product/maker/{id}/delete": Method Not Allowed (Allow: DELETE)');
+
+        $this->assertEquals(405, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -230,15 +230,10 @@ class MakerControllerTest extends MakerWebCommon
     {
         $this->client->request(
             'DELETE',
-            $this->app->url('admin_plugin_maker_delete', array('id' => null))
+            $this->generateUrl('admin_plugin_maker_delete', ['id' => null])
         );
 
-        // Check redirect
-        $this->assertTrue($this->client->getResponse()->isRedirect($this->app->url('admin_plugin_maker_index')));
-
-        $crawler = $this->client->followRedirect();
-        // Check message
-        $this->assertContains('メーカーが見つかりません。', $crawler->filter('.alert')->html());
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -246,19 +241,15 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMakerDeleteIdIsNotExist()
     {
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
         /**
          * @var Generator $faker
          */
         $faker = $this->getFaker();
         $id = $faker->randomNumber(3);
 
-        $this->client->request(
-            'DELETE',
-            $this->app->url('admin_plugin_maker_delete', array('id' => $id))
-        );
+        $this->client->request('DELETE', $this->generateUrl('admin_plugin_maker_delete', ['id' => $id]));
 
-        $this->fail('Maker not found!');
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -270,10 +261,10 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'DELETE',
-            $this->app->url('admin_plugin_maker_delete', array('id' => $Maker->getId()))
+            $this->generateUrl('admin_plugin_maker_delete', ['id' => $Maker->getId()])
         );
         // Check redirect
-        $this->assertTrue($this->client->getResponse()->isRedirect($this->app->url('admin_plugin_maker_index')));
+        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_plugin_maker_index')));
 
         $crawler = $this->client->followRedirect();
 
@@ -294,32 +285,32 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMoveRankTestIsNotPostAjax()
     {
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException');
         $Maker01 = $this->createMaker(1);
         $oldRank = $Maker01->getRank();
         $Maker02 = $this->createMaker(2);
         $newRank = $Maker02->getRank();
 
-        $request = array(
+        $request = [
             $Maker01->getId() => $newRank,
             $Maker02->getId() => $oldRank,
-        );
+        ];
 
         $this->client->request(
             'GET',
-            $this->app->url('admin_plugin_maker_move_rank'),
+            $this->generateUrl('admin_plugin_maker_move_rank'),
             $request,
-            array(),
-            array(
+            [],
+            [
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'CONTENT_TYPE' => 'application/json',
-            )
+            ]
         );
 
         $this->actual = $Maker01->getRank();
         $this->expected = $oldRank;
         $this->verify();
-        $this->fail('No route found for "GET /admin/product/maker/rank/move": Method Not Allowed (Allow: POST)');
+
+        $this->assertEquals(405, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -332,20 +323,20 @@ class MakerControllerTest extends MakerWebCommon
         $Maker02 = $this->createMaker(2);
         $newRank = $Maker02->getRank();
 
-        $request = array(
+        $request = [
             $Maker01->getId() => $newRank,
             $Maker02->getId() => $oldRank,
-        );
+        ];
 
         $this->client->request(
             'POST',
-            $this->app->url('admin_plugin_maker_move_rank'),
+            $this->generateUrl('admin_plugin_maker_move_rank'),
             $request,
-            array(),
-            array(
+            [],
+            [
                 'HTTP_X-Requested-With' => 'XMLHttpRequest',
                 'CONTENT_TYPE' => 'application/json',
-            )
+            ]
         );
 
         $this->actual = $Maker01->getRank();
@@ -367,11 +358,11 @@ class MakerControllerTest extends MakerWebCommon
          */
         $faker = $this->getFaker();
 
-        $form = array(
-            '_token' => 'dummy',
+        $form = [
+            Constant::TOKEN_NAME => 'dummy',
             'name' => $faker->word,
             'id' => $makerId,
-        );
+        ];
 
         return $form;
     }

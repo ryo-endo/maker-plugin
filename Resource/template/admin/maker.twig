@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 #}
-{% extends 'default_frame.twig' %}
+{% extends '@admin/default_frame.twig' %}
 
 {% set menus = ['product', 'maker'] %}
 
-{% block title %}商品管理{% endblock %}
-{% block sub_title %}メーカー管理{% endblock %}
+{% block title %}{{ 'admin.plugin.maker.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.plugin.maker.sub_title'|trans }}{% endblock %}
 {% block stylesheet %}
     <style type="text/css">
         .attention {
@@ -34,10 +34,10 @@
 {% endblock stylesheet %}
 
 {% block javascript %}
-    <script src="{{ app.config.admin_urlpath }}/assets/js/vendor/jquery.ui/jquery.ui.core.min.js"></script>
-    <script src="{{ app.config.admin_urlpath }}/assets/js/vendor/jquery.ui/jquery.ui.widget.min.js"></script>
-    <script src="{{ app.config.admin_urlpath }}/assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js"></script>
-    <script src="{{ app.config.admin_urlpath }}/assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js"></script>
+<script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
     <script>
         var addButton = '追加';
         var editButton = '更新';
@@ -126,11 +126,11 @@
             <div id="list_box__body" class="box">
                 <div class="box-header">
                     <div class="box-title box-title-maker">
-                        <a href="{{ url('admin_plugin_maker_index') }}">メーカー</a>
+                        <a href="{{ url('admin_plugin_maker_index') }}">{{ 'admin.plugin.maker.maker'|trans }}</a>
                     </div>
                 </div>
                 <div class="box-body">
-                    <a id="add-button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#add-modal">メーカー作成</a>
+                    <a id="add-button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#add-modal">{{ 'admin.plugin.maker.maker.register'|trans }}</a>
                 </div><!-- /.box-header -->
 
                 {% if arrMaker|length > 0 %}
@@ -139,39 +139,39 @@
                             <div class="tableish">
 
                                 {% for Maker in arrMaker %}
-                                <div class="item_box tr" data-rank="{{ Maker.rank }}" data-maker-id="{{ Maker.id }}">
-                                    <div class="icon_sortable td">
-                                        <svg class="cb cb-ellipsis-v"> <use xlink:href="#cb-ellipsis-v" /></svg>
-                                    </div>
-                                    <div class="item_pattern td">
-                                        <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ Maker.name }}</a>
-                                    </div>
-                                    <div class="icon_edit td">
-                                        <div class="dropdown">
-                                            <a class="dropdown-toggle" data-toggle="dropdown"><svg class="cb cb-ellipsis-h"> <use xlink:href="#cb-ellipsis-h" /></svg></a>
-                                            <ul class="dropdown-menu dropdown-menu-right">
-                                                <li>
-                                                    <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">編集</a>
-                                                </li>
-                                                <li>
-                                                    {% set delete_action = url('admin_plugin_maker_delete', {id: Maker.id}) %}
-                                                    <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }} data-method="delete" data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}">削除</a>
-                                                </li>
-                                            </ul>
+                                    <div class="item_box tr" data-rank="{{ Maker.rank }}" data-maker-id="{{ Maker.id }}">
+                                        <div class="icon_sortable td">
+                                            <svg class="cb cb-ellipsis-v"> <use xlink:href="#cb-ellipsis-v" /></svg>
                                         </div>
-                                    </div>
-                                </div><!-- /.item_box -->
+                                        <div class="item_pattern td">
+                                            <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ Maker.name }}</a>
+                                        </div>
+                                        <div class="icon_edit td">
+                                            <div class="dropdown">
+                                                <a class="dropdown-toggle" data-toggle="dropdown"><svg class="cb cb-ellipsis-h"> <use xlink:href="#cb-ellipsis-h" /></svg></a>
+                                                <ul class="dropdown-menu dropdown-menu-right">
+                                                    <li>
+                                                        <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ 'common.label.edit'|trans }}</a>
+                                                    </li>
+                                                    <li>
+                                                        {% set delete_action = url('admin_plugin_maker_delete', {id: Maker.id}) %}
+                                                        <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }} data-method="delete" data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}">{{ 'common.label.delete'|trans }}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div><!-- /.item_box -->
                                 {% endfor %}
 
                             </div>
                         </div>
                     </div><!-- /.box-body -->
-            {% else %}
-                <div class="box-body no-padding">
-                    <div class="data-empty"><svg class="cb cb-inbox"> <use xlink:href="#cb-inbox" /></svg><p>データはありません</p></div>
-                </div><!-- /.box-body -->
-            {% endif %}
-            <!-- ▲ データがある時 ▲ -->
+                {% else %}
+                    <div class="box-body no-padding">
+                        <div class="data-empty"><svg class="cb cb-inbox"> <use xlink:href="#cb-inbox" /></svg><p>{{ 'admin.plugin.maker.maker.no_records'|trans }}</p></div>
+                    </div><!-- /.box-body -->
+                {% endif %}
+                <!-- ▲ データがある時 ▲ -->
 
             </div><!-- /.box -->
         </div><!-- /.col -->
@@ -193,8 +193,8 @@
                         {{ form_errors(form.id) }}
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-default btn-sm" id="add-button-submit">追加</button>
-                        <button type="reset" data-dismiss="modal" class="btn btn-default">キャンセル</button>
+                        <button type="submit" class="btn btn-default btn-sm" id="add-button-submit">{{ 'common.label.save'|trans }}</button>
+                        <button type="reset" data-dismiss="modal" class="btn btn-default">{{ 'admin.common.label.cancel'|trans }}</button>
                     </div>
                 </div>
             </form>

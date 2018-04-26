@@ -14,6 +14,7 @@ use Faker\Generator;
 use Plugin\Maker\Entity\ProductMaker;
 use Plugin\Maker\Tests\Web\MakerWebCommon;
 use Symfony\Component\HttpKernel\Client;
+use Plugin\Maker\Repository\ProductMakerRepository;
 
 /**
  * Class ProductMakerTest.
@@ -29,12 +30,19 @@ class ProductMakerTest extends MakerWebCommon
     protected $productId;
 
     /**
+     * @var ProductMakerRepository
+     */
+    protected $productMakerRepository;
+
+    /**
      * Set up function.
      */
     public function setUp()
     {
         parent::setUp();
-        $this->deleteAllRows(array('plg_product_maker', 'plg_maker'));
+        $this->deleteAllRows(['plg_product_maker', 'plg_maker']);
+
+        $this->productMakerRepository = $this->container->get(ProductMakerRepository::class);
     }
 
     /**
@@ -42,8 +50,8 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductNewRender()
     {
-        $crawler = $this->client->request('GET', $this->app->url('admin_product_product_new'));
-        $this->assertContains('メーカー', $crawler->filter('body .container-fluid')->html());
+        $crawler = $this->client->request('GET', $this->generateUrl('admin_product_product_new'));
+        $this->assertContains('メーカー', $crawler->filter('body .c-container')->html());
     }
 
     /**
@@ -51,8 +59,8 @@ class ProductMakerTest extends MakerWebCommon
      */
     public function testProductNewWithoutMaker()
     {
-        $crawler = $this->client->request('GET', $this->app->url('admin_product_product_new'));
-        $this->assertContains('メーカー', $crawler->filter('body .container-fluid')->html());
+        $crawler = $this->client->request('GET', $this->generateUrl('admin_product_product_new'));
+        $this->assertContains('メーカー', $crawler->filter('body .c-container')->html());
     }
 
     /**
@@ -62,8 +70,8 @@ class ProductMakerTest extends MakerWebCommon
     {
         $Maker = $this->createMaker();
 
-        $crawler = $this->client->request('GET', $this->app->url('admin_product_product_new'));
-        $this->assertContains($Maker->getName(), $crawler->filter('body .container-fluid')->html());
+        $crawler = $this->client->request('GET', $this->generateUrl('admin_product_product_new'));
+        $this->assertContains($Maker->getName(), $crawler->filter('body .c-container')->html());
     }
 
     /**
@@ -85,8 +93,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -97,10 +105,10 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check layout
-        $this->assertNotContains($formData[self::MAKER_URL], $crawler->filter('body .container-fluid')->html());
+        $this->assertNotContains($formData[self::MAKER_URL], $crawler->filter('body .c-container')->html());
 
         // Check database
-        $arrProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->findAll();
+        $arrProductMaker = $this->productMakerRepository->findAll();
 
         $this->actual = count($arrProductMaker);
         $this->expected = 0;
@@ -127,15 +135,15 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $crawler = $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         // Check message
-        $this->assertContains('有効な値ではありません。', $crawler->filter('.errormsg')->html());
+        $this->assertContains('有効な値ではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->findAll();
+        $arrProductMaker = $this->productMakerRepository->findAll();
 
         $this->actual = count($arrProductMaker);
         $this->expected = 0;
@@ -163,7 +171,7 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
+            $this->generateUrl('admin_product_product_new'),
             array('admin_product' => $formData)
         );
 
@@ -181,7 +189,7 @@ class ProductMakerTest extends MakerWebCommon
         /**
          * @var ProductMaker $ProductMaker
          */
-        $ProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->find($productId);
+        $ProductMaker = $this->productMakerRepository->find($productId);
 
         $this->actual = $ProductMaker->getMaker()->getId();
         $this->expected = $formData[self::MAKER];
@@ -209,15 +217,15 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $crawler = $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
+            $this->generateUrl('admin_product_product_new'),
             array('admin_product' => $formData)
         );
 
         // Check message
-        $this->assertContains('有効なURLではありません。', $crawler->filter('.errormsg')->html());
+        $this->assertContains('有効なURLではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->findAll();
+        $arrProductMaker = $this->productMakerRepository->findAll();
 
         $this->actual = count($arrProductMaker);
         $this->expected = 0;
@@ -245,8 +253,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -263,7 +271,7 @@ class ProductMakerTest extends MakerWebCommon
         /**
          * @var ProductMaker $ProductMaker
          */
-        $ProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->find($productId);
+        $ProductMaker = $this->productMakerRepository->find($productId);
 
         $this->actual = array($ProductMaker->getMaker()->getId(), $ProductMaker->getMakerUrl());
         $this->expected = array($formData[self::MAKER], $formData[self::MAKER_URL]);
@@ -277,8 +285,8 @@ class ProductMakerTest extends MakerWebCommon
     {
         $Product = $this->createProduct();
 
-        $crawler = $this->client->request('GET', $this->app->url('admin_product_product_edit', array('id' => $Product->getId())));
-        $this->assertContains('メーカー', $crawler->filter('body .container-fluid')->html());
+        $crawler = $this->client->request('GET', $this->generateUrl('admin_product_product_edit', ['id' => $Product->getId()]));
+        $this->assertContains('メーカー', $crawler->filter('body .c-container')->html());
     }
 
     /**
@@ -289,8 +297,8 @@ class ProductMakerTest extends MakerWebCommon
         $Product = $this->createProduct();
         $Maker = $this->createMaker();
 
-        $crawler = $this->client->request('GET', $this->app->url('admin_product_product_edit', array('id' => $Product->getId())));
-        $this->assertContains($Maker->getName(), $crawler->filter('body .container-fluid')->html());
+        $crawler = $this->client->request('GET', $this->generateUrl('admin_product_product_edit', ['id' => $Product->getId()]));
+        $this->assertContains($Maker->getName(), $crawler->filter('body .c-container')->html());
     }
 
     /**
@@ -315,8 +323,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -337,8 +345,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_edit', array('id' => $productId)),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_edit', ['id' => $productId]),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -348,7 +356,7 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        $arrProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->findAll();
+        $arrProductMaker = $this->productMakerRepository->findAll();
 
         $this->actual = count($arrProductMaker);
         $this->expected = 0;
@@ -377,8 +385,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -399,15 +407,15 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $crawler = $client->request(
             'POST',
-            $this->app->url('admin_product_product_edit', array('id' => $productId)),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_edit', ['id' => $productId]),
+            ['admin_product' => $formData]
         );
 
         // Check message
-        $this->assertContains('有効な値ではありません。', $crawler->filter('.errormsg')->html());
+        $this->assertContains('有効な値ではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->findAll();
+        $arrProductMaker = $this->productMakerRepository->findAll();
 
         $this->actual = count($arrProductMaker);
         $this->expected = 0;
@@ -432,8 +440,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -454,7 +462,7 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_edit', array('id' => $productId)),
+            $this->generateUrl('admin_product_product_edit', ['id' => $productId]),
             array('admin_product' => $formData)
         );
 
@@ -465,7 +473,7 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        $ProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->find($productId);
+        $ProductMaker = $this->productMakerRepository->find($productId);
 
         $this->actual = array($ProductMaker->getMaker()->getId(), $ProductMaker->getMakerUrl());
         $this->expected = array($Maker->getId(), $formData[self::MAKER_URL]);
@@ -494,8 +502,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -512,15 +520,15 @@ class ProductMakerTest extends MakerWebCommon
 
         $crawler = $client->request(
             'POST',
-            $this->app->url('admin_product_product_edit', array('id' => $productId)),
+            $this->generateUrl('admin_product_product_edit', ['id' => $productId]),
             array('admin_product' => $formData)
         );
 
         // Check message
-        $this->assertContains('有効なURLではありません。', $crawler->filter('.errormsg')->html());
+        $this->assertContains('有効なURLではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->findAll();
+        $arrProductMaker = $this->productMakerRepository->findAll();
 
         $this->actual = count($arrProductMaker);
         $this->expected = 0;
@@ -548,8 +556,8 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_new'),
-            array('admin_product' => $formData)
+            $this->generateUrl('admin_product_product_new'),
+            ['admin_product' => $formData]
         );
 
         $this->assertTrue($client->getResponse()->isRedirection());
@@ -570,7 +578,7 @@ class ProductMakerTest extends MakerWebCommon
         $client = $this->client;
         $client->request(
             'POST',
-            $this->app->url('admin_product_product_edit', array('id' => $productId)),
+            $this->generateUrl('admin_product_product_edit', ['id' => $productId]),
             array('admin_product' => $formData)
         );
 
@@ -581,7 +589,7 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        $ProductMaker = $this->app['eccube.plugin.maker.repository.product_maker']->find($productId);
+        $ProductMaker = $this->productMakerRepository->find($productId);
 
         $this->actual = array($ProductMaker->getMaker()->getId(), $ProductMaker->getMakerUrl());
         $this->expected = array($Maker->getId(), $formData[self::MAKER_URL]);

@@ -13,39 +13,57 @@ namespace Plugin\Maker\Entity;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Eccube\Entity\AbstractEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class Maker.
+ *
+ * @ORM\Table(name="plg_maker")
+ * @ORM\Entity(repositoryClass="Plugin\Maker\Repository\MakerRepository")
  */
 class Maker extends AbstractEntity
 {
     /**
      * @var int
+     *
+     * @ORM\Column(name="maker_id", type="integer", options={"unsigned":true})
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="name", type="string")
      */
     private $name;
 
     /**
      * @var int
+     *
+     * @ORM\Column(name="rank", type="integer", options={"unsigned":false, "default":0})
      */
     private $rank;
 
     /**
      * @var int
+     *
+     * @ORM\Column(name="del_flg", type="smallint", options={"unsigned":false, "default":0})
      */
     private $del_flg;
 
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="create_date", type="datetimetz")
      */
     private $create_date;
 
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="update_date", type="datetimetz")
      */
     private $update_date;
 
@@ -200,8 +218,8 @@ class Maker extends AbstractEntity
      */
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addConstraint(new UniqueEntity(array(
+        $metadata->addConstraint(new UniqueEntity([
             'fields' => 'name',
-        )));
+        ]));
     }
 }

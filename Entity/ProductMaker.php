@@ -12,37 +12,61 @@ namespace Plugin\Maker\Entity;
 
 use Eccube\Entity\AbstractEntity;
 use Eccube\Util\EntityUtil;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class ProductMaker.
+ *
+ * @ORM\Table(name="plg_product_maker")
+ * @ORM\Entity(repositoryClass="Plugin\Maker\Repository\ProductMakerRepository")
  */
 class ProductMaker extends AbstractEntity
 {
     /**
      * @var int
+     *
+     * @ORM\Column(name="product_id", type="integer", options={"unsigned":true})
+     * @ORM\Id
      */
     private $id;
+
     /**
      * @var string
+     *
+     * @ORM\Column(name="maker_url", type="string", nullable=true)
      */
     private $maker_url;
+
     /**
      * @var int
+     *
+     * @ORM\Column(name="del_flg", type="smallint", options={"unsigned":false, "default":0})
      */
     private $del_flg;
+
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="create_date", type="datetimetz")
      */
     private $create_date;
+
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="update_date", type="datetimetz")
      */
     private $update_date;
 
     /**
      * @var Maker
+     *
+     * @ORM\ManyToOne(targetEntity="Maker", inversedBy="ProductMaker", cascade={"persist"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="maker_id", referencedColumnName="maker_id")
+     * })
      */
-    private $Maker;
+    protected $Maker;
 
     /**
      * Set Id.

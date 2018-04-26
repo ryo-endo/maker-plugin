@@ -13,22 +13,28 @@ namespace Plugin\Maker\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
  * Class MakerType.
  */
 class MakerType extends AbstractType
 {
-    private $app;
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * MakerType constructor.
      *
-     * @param \Silex\Application $app
+     * @param TranslatorInterface $translator
      */
-    public function __construct($app)
+    public function __construct(TranslatorInterface $translator)
     {
-        $this->app = $app;
+        $this->translator = $translator;
     }
 
     /**
@@ -40,14 +46,14 @@ class MakerType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', 'text', array(
+            ->add('name', TextType::class, [
                 'label' => 'メーカー名',
                 'required' => true,
-                'constraints' => array(
-                    new Assert\NotBlank(array('message' => $this->app->trans('admin.plugin.maker.blank.error'))),
-                ),
-            ))
-            ->add('id', 'hidden', array());
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'admin.plugin.maker.blank.error']),
+                ],
+            ])
+            ->add('id', HiddenType::class, []);
     }
 
     /**

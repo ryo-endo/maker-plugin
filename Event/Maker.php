@@ -10,7 +10,6 @@
 
 namespace Plugin\Maker\Event;
 
-use Doctrine\ORM\EntityRepository;
 use Eccube\Entity\Product;
 use Eccube\Event\EventArgs;
 use Eccube\Common\Constant;
@@ -20,6 +19,8 @@ use Plugin\Maker\Repository\ProductMakerRepository;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * Class Maker.
@@ -47,28 +48,27 @@ class Maker extends CommonEvent
 
         // Add new extension
         $builder
-            ->add('plg_maker', 'entity', array(
+            ->add('plg_maker', EntityType::class, [
                 'label' => 'メーカー',
-                'class' => 'Plugin\Maker\Entity\Maker',
-                'query_builder' => function (EntityRepository $repository) {
-                    return $repository->createQueryBuilder('m')->orderBy('m.rank', 'DESC');
-                },
-                'property' => 'name',
+                'class' => \Plugin\Maker\Entity\Maker::class,
+                'choice_label' => 'name',
+                'choices' => $this->makerRepository->findBy([], ['rank' => 'DESC']),
+                //'property' => 'name',
                 'required' => false,
-                'empty_value' => '',
+                //'empty_value' => '',
                 'mapped' => false,
-            ))
-            ->add('plg_maker_url', 'text', array(
+            ])
+            ->add('plg_maker_url', TextType::class, [
                 'label' => 'URL',
                 'required' => false,
-                'constraints' => array(
+                'constraints' => [
                     new Assert\Url(),
-                ),
+                ],
                 'mapped' => false,
-                'attr' => array(
-                    'placeholder' => $this->app->trans('admin.plugin.maker.placeholder.url'),
-                ),
-            ));
+                'attr' => [
+                    'placeholder' => $this->translator->trans('admin.plugin.maker.placeholder.url'),
+                ],
+            ]);
 
         /**
          * @var Product $Product
@@ -85,12 +85,11 @@ class Maker extends CommonEvent
             /**
              * @var ProductMakerRepository $repository
              */
-            $repository = $this->app['eccube.plugin.maker.repository.product_maker'];
-            $ProductMaker = $repository->find($id);
+            $ProductMaker = $this->productMakerRepository->find($id);
         }
 
         if (!$ProductMaker) {
-            log_info('Event: Product maker not found!', array('Product id' => $id));
+            log_info('Event: Product maker not found!', ['Product id' => $id]);
 
             return;
         }
@@ -120,13 +119,9 @@ class Maker extends CommonEvent
         $Product = $eventArgs->getArgument('Product');
 
         /**
-         * @var ProductMakerRepository $repository
-         */
-        $repository = $this->app['eccube.plugin.maker.repository.product_maker'];
-        /**
          * @var ProductMaker $ProductMaker
          */
-        $ProductMaker = $repository->find($Product);
+        $ProductMaker = $this->productMakerRepository->find($Product);
         if (!$ProductMaker) {
             $ProductMaker = new ProductMaker();
         }
@@ -134,9 +129,9 @@ class Maker extends CommonEvent
         $maker = $form->get('plg_maker')->getData();
         if (!$maker) {
             if ($ProductMaker->getId()) {
-                log_info('Event: product maker removed', array('Product maker id' => $ProductMaker->getId()));
-                $this->app['orm.em']->remove($ProductMaker);
-                $this->app['orm.em']->flush($ProductMaker);
+                log_info('Event: product maker removed', ['Product maker id' => $ProductMaker->getId()]);
+                $this->entityManager->remove($ProductMaker);
+                $this->entityManager->flush();
             }
 
             return;
@@ -149,12 +144,10 @@ class Maker extends CommonEvent
             ->setMakerUrl($makerUrl)
             ->setDelFlg(Constant::DISABLED)
             ->setMaker($maker);
-        /**
-         * @var EntityRepository $this->app['orm.em']
-         */
-        $this->app['orm.em']->persist($ProductMaker);
-        $this->app['orm.em']->flush($ProductMaker);
-        log_info('Event: product maker save success!', array('Product id' => $ProductMaker->getId()));
+
+        $this->entityManager->persist($ProductMaker);
+        $this->entityManager->flush();
+        log_info('Event: product maker save success!', ['Product id' => $ProductMaker->getId()]);
 
         log_info('Event: product maker hook into the product management complete end.');
     }
@@ -180,15 +173,11 @@ class Maker extends CommonEvent
         }
 
         /**
-         * @var ProductMakerRepository $repository
-         */
-        $repository = $this->app['eccube.plugin.maker.repository.product_maker'];
-        /**
          * @var ProductMaker $ProductMaker
          */
-        $ProductMaker = $repository->find($Product);
+        $ProductMaker = $this->productMakerRepository->find($Product);
         if (!$ProductMaker) {
-            log_info('Event: product maker not found.', array('Product id' => $Product->getId()));
+            log_info('Event: product maker not found.', ['Product id' => $Product->getId()]);
 
             return;
         }
@@ -196,17 +185,20 @@ class Maker extends CommonEvent
         $Maker = $ProductMaker->getMaker();
 
         if (!$Maker) {
-            log_info('Event: maker not found.', array('Product maker id' => $ProductMaker->getId()));
+            log_info('Event: maker not found.', ['Product maker id' => $ProductMaker->getId()]);
             // 商品メーカーマスタにデータが存在しないまたは削除されていれば無視する
             return;
         }
 
-        /**
-         * @var \Twig_Environment $twig
-         */
-        $twig = $this->app['twig'];
-
-        $twigAppend = $twig->getLoader()->getSource('Maker/Resource/template/default/maker.twig');
+        try {
+            $twigAppend = $this->twigEnvironment->render('Maker/Resource/template/default/maker.twig', [
+                'maker_url' => $ProductMaker->getMakerUrl(),
+                'maker_name' => $Maker->getName(),
+            ]);
+        } catch (\Exception $e) {
+            log_info('Event: product maker render error.', [$e]);
+            $twigAppend = '';
+        }
 
         /**
          * @var string $twigSource twig template.
@@ -220,7 +212,7 @@ class Maker extends CommonEvent
         $parameters['maker_name'] = $ProductMaker->getMaker()->getName();
         $parameters['maker_url'] = $ProductMaker->getMakerUrl();
         $event->setParameters($parameters);
-        log_info('Event: product maker render success.', array('Product id' => $ProductMaker->getId()));
+        log_info('Event: product maker render success.', ['Product id' => $ProductMaker->getId()]);
         log_info('Event: product maker hook into the product detail end.');
     }
 }

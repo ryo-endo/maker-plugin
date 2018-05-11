@@ -2,7 +2,3 @@ name: Maker
 event: MakerEvent
 code: Maker
 version: 1.0.0
-service: 
-    - MakerServiceProvider
-orm.path:
-    - /Resource/doctrine

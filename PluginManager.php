@@ -18,43 +18,4 @@ use Eccube\Plugin\AbstractPluginManager;
  */
 class PluginManager extends AbstractPluginManager
 {
-    /**
-     * @param array       $config
-     * @param Application $app
-     */
-    public function install($config, $app)
-    {
-    }
-
-    /**
-     * @param array       $config
-     * @param Application $app
-     */
-    public function uninstall($config, $app)
-    {
-    }
-
-    /**
-     * @param array       $config
-     * @param Application $app
-     */
-    public function enable($config, $app)
-    {
-    }
-
-    /**
-     * @param array       $config
-     * @param Application $app
-     */
-    public function disable($config, $app)
-    {
-    }
-
-    /**
-     * @param array       $config
-     * @param Application $app
-     */
-    public function update($config, $app)
-    {
-    }
 }

@@ -91,7 +91,6 @@ class MakerWebCommon extends AbstractAdminWebTestCase
         $Maker = new Maker();
         $Maker->setName($faker->word);
         $Maker->setRank($rank);
-        $Maker->setDelFlg(Constant::DISABLED);
 
         $this->entityManager->persist($Maker);
         $this->entityManager->flush();

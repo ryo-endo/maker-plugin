@@ -12,7 +12,6 @@ namespace Plugin\Maker\Event;
 
 use Eccube\Entity\Product;
 use Eccube\Event\EventArgs;
-use Eccube\Common\Constant;
 use Eccube\Event\TemplateEvent;
 use Plugin\Maker\Entity\ProductMaker;
 use Plugin\Maker\Repository\ProductMakerRepository;
@@ -142,7 +141,6 @@ class Maker extends CommonEvent
         $ProductMaker
             ->setId($Product->getId())
             ->setMakerUrl($makerUrl)
-            ->setDelFlg(Constant::DISABLED)
             ->setMaker($maker);
 
         $this->entityManager->persist($ProductMaker);

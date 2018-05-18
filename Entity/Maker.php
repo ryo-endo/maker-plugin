@@ -47,13 +47,6 @@ class Maker extends AbstractEntity
     private $rank;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="del_flg", type="smallint", options={"unsigned":false, "default":0})
-     */
-    private $del_flg;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="create_date", type="datetimetz")
@@ -137,30 +130,6 @@ class Maker extends AbstractEntity
         $this->rank = $rank;
 
         return $this;
-    }
-
-    /**
-     * Set del_flg.
-     *
-     * @param int $delFlg
-     *
-     * @return Maker
-     */
-    public function setDelFlg($delFlg)
-    {
-        $this->del_flg = $delFlg;
-
-        return $this;
-    }
-
-    /**
-     * Get del_flg.
-     *
-     * @return int
-     */
-    public function getDelFlg()
-    {
-        return $this->del_flg;
     }
 
     /**

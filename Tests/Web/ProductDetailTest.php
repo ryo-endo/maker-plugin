@@ -145,7 +145,6 @@ class ProductDetailTest extends MakerWebCommon
 
         $ProductMaker = new ProductMaker();
         $ProductMaker->setMakerUrl($faker->url);
-        $ProductMaker->setDelFlg(Constant::DISABLED);
         $ProductMaker->setId($Product->getId());
         $ProductMaker->setMaker($Maker);
         $this->entityManager->persist($ProductMaker);

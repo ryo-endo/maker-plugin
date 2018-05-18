@@ -88,7 +88,7 @@ class MakerController extends AbstractController
         /**
          * @var ArrayCollection $arrMaker
          */
-        $arrMaker = $this->makerRepository->findBy(['del_flg' => Constant::DISABLED], ['rank' => 'DESC']);
+        $arrMaker = $this->makerRepository->findBy([], ['rank' => 'DESC']);
 
         return $this->render('Maker/Resource/template/admin/maker.twig', [
             'form' => $form->createView(),

@@ -11,7 +11,6 @@
 namespace Plugin\Maker\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Eccube\Common\Constant;
 use Plugin\Maker\Entity\Maker;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -55,7 +54,6 @@ class MakerRepository extends ServiceEntityRepository
                     $rank = 0;
                 }
                 $Maker->setRank($rank + 1);
-                $Maker->setDelFlg(Constant::DISABLED);
 
                 $em->createQueryBuilder()
                     ->update('Plugin\Maker\Entity\Maker', 'm')
@@ -76,7 +74,7 @@ class MakerRepository extends ServiceEntityRepository
     }
 
     /**
-     * Delete maker (del flg).
+     * Delete maker.
      *
      * @param Maker $Maker
      *
@@ -86,8 +84,7 @@ class MakerRepository extends ServiceEntityRepository
     {
         $em = $this->getEntityManager();
         try {
-            $Maker->setDelFlg(Constant::ENABLED);
-            $em->persist($Maker);
+            $em->remove($Maker);
             $em->flush();
         } catch (\Exception $e) {
             return false;

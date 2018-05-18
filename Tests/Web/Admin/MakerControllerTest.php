@@ -14,6 +14,7 @@ use Eccube\Common\Constant;
 use Faker\Generator;
 use Plugin\Maker\Tests\Web\MakerWebCommon;
 use Symfony\Component\DomCrawler\Crawler;
+use Plugin\Maker\Repository\MakerRepository;
 
 /**
  * Class MakerControllerTest.
@@ -21,12 +22,19 @@ use Symfony\Component\DomCrawler\Crawler;
 class MakerControllerTest extends MakerWebCommon
 {
     /**
+     * @var MakerRepository
+     */
+    protected $makerRepository;
+
+    /**
      * Set up function.
      */
     public function setUp()
     {
         parent::setUp();
         $this->deleteAllRows(array('plg_product_maker', 'plg_maker'));
+
+        $this->makerRepository = $this->container->get(MakerRepository::class);
     }
 
     /**
@@ -247,7 +255,7 @@ class MakerControllerTest extends MakerWebCommon
         $faker = $this->getFaker();
         $id = $faker->randomNumber(3);
 
-        $this->client->request('DELETE', $this->generateUrl('admin_plugin_maker_delete', ['id' => $id]));
+        $this->client->request('POST', $this->generateUrl('admin_plugin_maker_delete', ['id' => $id]));
 
         $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
@@ -260,7 +268,7 @@ class MakerControllerTest extends MakerWebCommon
         $Maker = $this->createMaker();
 
         $this->client->request(
-            'DELETE',
+            'POST',
             $this->generateUrl('admin_plugin_maker_delete', ['id' => $Maker->getId()])
         );
         // Check redirect
@@ -275,9 +283,7 @@ class MakerControllerTest extends MakerWebCommon
         $html = $crawler->filter('.box')->html();
         $this->assertContains('データはありません', $html);
 
-        $this->actual = $Maker->getDelFlg();
-        $this->expected = Constant::ENABLED;
-        $this->verify();
+        $this->assertNull($Maker->getId());
     }
 
     /**

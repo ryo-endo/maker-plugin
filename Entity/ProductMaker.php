@@ -38,13 +38,6 @@ class ProductMaker extends AbstractEntity
     private $maker_url;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="del_flg", type="smallint", options={"unsigned":false, "default":0})
-     */
-    private $del_flg;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="create_date", type="datetimetz")
@@ -63,7 +56,7 @@ class ProductMaker extends AbstractEntity
      *
      * @ORM\ManyToOne(targetEntity="Maker", inversedBy="ProductMaker", cascade={"persist"})
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="maker_id", referencedColumnName="maker_id")
+     *   @ORM\JoinColumn(name="maker_id", referencedColumnName="maker_id", onDelete="CASCADE")
      * })
      */
     protected $Maker;
@@ -114,28 +107,6 @@ class ProductMaker extends AbstractEntity
     public function getMakerUrl()
     {
         return $this->maker_url;
-    }
-
-    /**
-     * Set Del flg.
-     *
-     * @param $delFlg
-     *
-     * @return $this
-     */
-    public function setDelFlg($delFlg)
-    {
-        $this->del_flg = $delFlg;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDelFlg()
-    {
-        return $this->del_flg;
     }
 
     /**

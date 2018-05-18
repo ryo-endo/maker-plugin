@@ -104,7 +104,7 @@ class MakerController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
-     * @Method("DELETE")
+     * @Method("POST")
      * @Route("/%eccube_admin_route%/plugin/maker/{id}/delete", name="admin_plugin_maker_delete", requirements={"id":"\d+"})
      */
     public function delete(Maker $TargetMaker)

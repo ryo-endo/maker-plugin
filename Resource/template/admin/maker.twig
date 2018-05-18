@@ -39,8 +39,8 @@
     <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
     <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
     <script>
-        var addButton = '追加';
-        var editButton = '更新';
+        var addButton = '{{ 'admin.plugin.maker.maker.add'|trans }}';
+        var editButton = '{{ 'admin.plugin.maker.maker.update'|trans }}';
         var modalError = '{{ not form.vars.valid }}';
         $(function () {
             var myModal = $('#add-modal');
@@ -93,8 +93,8 @@
                 var makerName = $(this).data('name');
                 var editUrl = $(this).data('url');
 
-                $('#admin_maker_name').val(makerName);
-                $('#admin_maker_id').val(makerId);
+                $('#maker_name').val(makerName);
+                $('#maker_id').val(makerId);
                 $('#form1').attr('action', editUrl);
                 $('button#add-button-submit').text(editButton);
                 myModal.modal();
@@ -103,8 +103,8 @@
             // Clear old data
             myModal.on('hidden.bs.modal', function (e) {
                 var modal = $(this);
-                modal.find('#admin_maker_name').val('').css('background-color', '#fff');
-                modal.find('#admin_maker_id').val('');
+                modal.find('#maker_name').val('').css('background-color', '#fff');
+                modal.find('#maker_id').val('');
                 modal.find('#form1').attr('action', '');
                 modal.find('button#add-button-submit').text(addButton);
                 modal.find('.attention').hide();
@@ -155,7 +155,7 @@
                                                     </li>
                                                     <li>
                                                         {% set delete_action = url('admin_plugin_maker_delete', {id: Maker.id}) %}
-                                                        <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }} data-method="delete" data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}">{{ 'common.label.delete'|trans }}</a>
+                                                        <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }} data-method="post" data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}">{{ 'common.label.delete'|trans }}</a>
                                                     </li>
                                                 </ul>
                                             </div>

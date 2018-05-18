@@ -14,4 +14,6 @@ return [
     'admin.plugin.maker.maker.register' => 'メーカー作成',
     'admin.plugin.maker.maker.no_records' => 'データはありません',
     'admin.plugin.maker.product_maker.title' => 'メーカー設定',
+    'admin.plugin.maker.maker.add' => '追加',
+    'admin.plugin.maker.maker.update' => '更新',
 ];

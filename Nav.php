@@ -15,7 +15,7 @@ class Nav implements EccubeNav
         return [
             'product' => [
                 'id' => 'maker',
-                'name' => 'メーカー管理',
+                'name' => 'admin.plugin.maker.sub_title',
                 'url' => 'admin_plugin_maker_index'
             ]
         ];

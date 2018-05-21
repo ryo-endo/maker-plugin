@@ -9,7 +9,6 @@
  */
 namespace Plugin\Maker\Tests\Web;
 
-use Eccube\Common\Constant;
 use Eccube\Entity\Product;
 use Faker\Generator;
 use Plugin\Maker\Entity\Maker;

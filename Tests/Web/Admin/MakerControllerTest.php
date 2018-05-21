@@ -43,7 +43,7 @@ class MakerControllerTest extends MakerWebCommon
     public function testMakerRender()
     {
         $crawler = $this->client->request('GET', $this->generateUrl('admin_plugin_maker_index'));
-        $this->assertContains('データはありません', $crawler->filter('.box')->html());
+        $this->assertContains('データはありません', $crawler->filter('.no-record')->html());
     }
 
     /**
@@ -57,7 +57,7 @@ class MakerControllerTest extends MakerWebCommon
         }
 
         $crawler = $this->client->request('GET', $this->generateUrl('admin_plugin_maker_index'));
-        $number = count($crawler->filter('.tableish .item_box'));
+        $number = count($crawler->filter('.sortable-container .sortable-item'));
 
         $this->actual = $number;
         $this->expected = $numberTest;
@@ -122,7 +122,7 @@ class MakerControllerTest extends MakerWebCommon
         $this->assertContains('メーカーを保存しました。', $crawler->filter('.alert')->html());
 
         // check item name
-        $addItem = $crawler->filter('.tableish .item_box')->first()->text();
+        $addItem = $crawler->filter('.sortable-container .sortable-item')->first()->text();
         $this->assertContains($formData['name'], $addItem);
     }
 
@@ -212,7 +212,7 @@ class MakerControllerTest extends MakerWebCommon
         $this->assertContains('メーカーを保存しました。', $crawler->filter('.alert')->html());
 
         // Check item name
-        $html = $crawler->filter('.tableish .item_box')->first()->text();
+        $html = $crawler->filter('.sortable-container .sortable-item')->first()->text();
         $this->assertContains($formData['name'], $html);
     }
 
@@ -280,7 +280,7 @@ class MakerControllerTest extends MakerWebCommon
         $this->assertContains('メーカーを削除しました。', $crawler->filter('.alert')->html());
 
         // Check item name
-        $html = $crawler->filter('.box')->html();
+        $html = $crawler->filter('.no-record')->html();
         $this->assertContains('データはありません', $html);
 
         $this->assertNull($Maker->getId());

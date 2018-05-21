@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 #}
-{% extends '@admin/default_frame.twig' %}
+{% extends '@admin/styleguide_frame.twig' %}
 
 {% set menus = ['product', 'maker'] %}
 
@@ -50,18 +50,18 @@
 
             var oldRanks = [];
             // 画面の中のrank一覧を保持
-            $("div.tableish > .item_box").each(function() {
+            $(".sortable-container > .sortable-item").each(function() {
                 oldRanks.push(this.dataset.rank);
             });
 
             // reverse sort
             oldRanks.sort(function(a,b){return a - b;}).reverse();
 
-            $("div.tableish").sortable({
-                items: '> .item_box',
+            $(".sortable-container").sortable({
+                items: '> .sortable-item',
                 cursor: 'move',
                 update: function(e, ui) {
-                    $("body").append($('<div class="modal-backdrop in"></div>'));
+                    $("body").append($('<div class="modal-backdrop show"></div>'));
                     updateRank();
                 }
             });
@@ -70,7 +70,7 @@
                 // 並び替え後にrankを更新
                 var newRanks = {};
                 var i = 0;
-                $("div.tableish > .item_box").each(function() {
+                $(".sortable-container > .sortable-item").each(function() {
                     newRanks[this.dataset.makerId] = oldRanks[i];
                     i++;
                 });
@@ -121,67 +121,9 @@
 {% endblock %}
 
 {% block main %}
-    <div class="row">
-        <div id="list_box" class="col-md-9">
-            <div id="list_box__body" class="box">
-                <div class="box-header">
-                    <div class="box-title box-title-maker">
-                        <a href="{{ url('admin_plugin_maker_index') }}">{{ 'admin.plugin.maker.maker'|trans }}</a>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <a id="add-button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#add-modal">{{ 'admin.plugin.maker.maker.register'|trans }}</a>
-                </div><!-- /.box-header -->
-
-                {% if arrMaker|length > 0 %}
-                    <div class="box-body no-padding no-border">
-                        <div class="sortable_list">
-                            <div class="tableish">
-
-                                {% for Maker in arrMaker %}
-                                    <div class="item_box tr" data-rank="{{ Maker.rank }}" data-maker-id="{{ Maker.id }}">
-                                        <div class="icon_sortable td">
-                                            <svg class="cb cb-ellipsis-v"> <use xlink:href="#cb-ellipsis-v" /></svg>
-                                        </div>
-                                        <div class="item_pattern td">
-                                            <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ Maker.name }}</a>
-                                        </div>
-                                        <div class="icon_edit td">
-                                            <div class="dropdown">
-                                                <a class="dropdown-toggle" data-toggle="dropdown"><svg class="cb cb-ellipsis-h"> <use xlink:href="#cb-ellipsis-h" /></svg></a>
-                                                <ul class="dropdown-menu dropdown-menu-right">
-                                                    <li>
-                                                        <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ 'common.label.edit'|trans }}</a>
-                                                    </li>
-                                                    <li>
-                                                        {% set delete_action = url('admin_plugin_maker_delete', {id: Maker.id}) %}
-                                                        <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }} data-method="post" data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}">{{ 'common.label.delete'|trans }}</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div><!-- /.item_box -->
-                                {% endfor %}
-
-                            </div>
-                        </div>
-                    </div><!-- /.box-body -->
-                {% else %}
-                    <div class="box-body no-padding">
-                        <div class="data-empty"><svg class="cb cb-inbox"> <use xlink:href="#cb-inbox" /></svg><p>{{ 'admin.plugin.maker.maker.no_records'|trans }}</p></div>
-                    </div><!-- /.box-body -->
-                {% endif %}
-                <!-- ▲ データがある時 ▲ -->
-
-            </div><!-- /.box -->
-        </div><!-- /.col -->
-
-    </div>
-{% endblock %}
-
-{% block modal %}
-    <div class="modal" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="add-modal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <form role="form" class="form-horizontal" name="form1" id="form1" method="post">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -193,12 +135,79 @@
                         {{ form_errors(form.id) }}
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-default btn-sm" id="add-button-submit">{{ 'common.label.save'|trans }}</button>
-                        <button type="reset" data-dismiss="modal" class="btn btn-default">{{ 'admin.common.label.cancel'|trans }}</button>
+                        <button type="submit" class="btn btn-ec-conversion" id="add-button-submit">{{ 'common.label.save'|trans }}</button>
+                        <button type="reset" data-dismiss="modal" class="btn btn-ec-sub">{{ 'admin.common.label.cancel'|trans }}</button>
                     </div>
                 </div>
             </form>
-
         </div>
     </div>
+
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-inline-block" data-toggle="tooltip" data-placement="top"
+                                     title="{{ 'admin.plugin.maker.maker'|trans }}">
+                                        <span class="card-title">
+                                            <a href="{{ url('admin_plugin_maker_index') }}">{{ 'admin.plugin.maker.maker'|trans }}</a>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <a id="add-button" class="btn btn-default btn-ec-regular" data-toggle="modal" data-target="#add-modal">{{ 'admin.plugin.maker.maker.register'|trans }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if arrMaker|length > 0 %}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-body p-0">
+                            <div class="card rounded border-0 mb-2" id="maker_list">
+                                <ul class="list-group list-group-flush sortable-container">
+                                    {% for Maker in arrMaker %}
+                                        <li class="list-group-item sortable-item" data-rank="{{ Maker.rank }}" data-maker-id="{{ Maker.id }}">
+                                            <div class="row justify-content-around mode-view">
+                                                <div class="col-auto d-flex align-items-center">
+                                                    <i class="fa fa-bars text-ec-gray"></i>
+                                                </div>
+                                                <div class="col d-flex">
+                                                    <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ Maker.name }}</a>
+                                                </div>
+                                                <div class="col-auto text-right">
+                                                    <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}" data-toggle="tooltip" title="{{ 'common.label.edit'|trans }}">
+                                                        <i class="fa fa-pencil fa-lg text-secondary" aria-hidden="true"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="col-auto text-right">
+                                                    {% set delete_action = url('admin_plugin_maker_delete', {id: Maker.id}) %}
+                                                    <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }} data-method="post" data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}" data-toggle="tooltip" title="{{ 'common.label.delete'|trans }}">
+                                                        <i class="fa fa-close fa-lg text-secondary" aria-hidden="true"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted">{{ 'admin.plugin.maker.maker.no_records'|trans }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

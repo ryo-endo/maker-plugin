@@ -85,7 +85,7 @@ class MakerRepository extends ServiceEntityRepository
         $em = $this->getEntityManager();
         try {
             $em->remove($Maker);
-            $em->flush();
+            $em->flush($Maker);
         } catch (\Exception $e) {
             return false;
         }

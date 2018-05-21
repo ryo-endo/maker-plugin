@@ -19,7 +19,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Plugin\Maker\Repository\MakerRepository;
 use Plugin\Maker\Form\Type\MakerType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Eccube\Common\Constant;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use \Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MakerController.
@@ -48,9 +49,10 @@ class MakerController extends AbstractController
      * @param Request     $request
      * @param null        $id
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response|array
      *
      * @Route("/%eccube_admin_route%/plugin/maker/{id}", name="admin_plugin_maker_index", requirements={"id":"\d+"}, defaults={"index":0})
+     * @Template("@Maker/admin/maker.twig")
      */
     public function index(Request $request, $id = null)
     {
@@ -90,11 +92,11 @@ class MakerController extends AbstractController
          */
         $arrMaker = $this->makerRepository->findBy([], ['rank' => 'DESC']);
 
-        return $this->render('Maker/Resource/template/admin/maker.twig', [
+        return [
             'form' => $form->createView(),
             'arrMaker' => $arrMaker,
             'TargetMaker' => $TargetMaker,
-        ]);
+        ];
     }
 
     /**
@@ -130,7 +132,7 @@ class MakerController extends AbstractController
      *
      * @param Request     $request
      *
-     * @return bool
+     * @return Response
      *
      * @throws \Exception
      *
@@ -145,6 +147,6 @@ class MakerController extends AbstractController
             log_info('Maker move rank', $arrMoved);
         }
 
-        return true;
+        return new Response('Successfully');
     }
 }

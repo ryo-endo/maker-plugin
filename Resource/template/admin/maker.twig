@@ -19,9 +19,11 @@
         .attention {
             color: #f00;
         }
+
         .sortable_list .icon_sortable {
             width: 2%;
         }
+
         .box-title-maker a:last-child {
             font-weight: bold;
         }
@@ -34,7 +36,7 @@
 {% endblock stylesheet %}
 
 {% block javascript %}
-<script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
     <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
     <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
     <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
@@ -50,38 +52,40 @@
 
             var oldRanks = [];
             // 画面の中のrank一覧を保持
-            $(".sortable-container > .sortable-item").each(function() {
+            $(".sortable-container > .sortable-item").each(function () {
                 oldRanks.push(this.dataset.rank);
             });
 
             // reverse sort
-            oldRanks.sort(function(a,b){return a - b;}).reverse();
+            oldRanks.sort(function (a, b) {
+                return a - b;
+            }).reverse();
 
             $(".sortable-container").sortable({
                 items: '> .sortable-item',
                 cursor: 'move',
-                update: function(e, ui) {
+                update: function (e, ui) {
                     $("body").append($('<div class="modal-backdrop show"></div>'));
                     updateRank();
                 }
             });
 
-            var updateRank = function() {
+            var updateRank = function () {
                 // 並び替え後にrankを更新
                 var newRanks = {};
                 var i = 0;
-                $(".sortable-container > .sortable-item").each(function() {
+                $(".sortable-container > .sortable-item").each(function () {
                     newRanks[this.dataset.makerId] = oldRanks[i];
                     i++;
                 });
 
                 $.ajax({
-                    url: '{{ url('admin_plugin_maker_move_rank') }}',
+                    url: '{{ url('admin_plugin_maker_move_sort_no') }}',
                     type: 'POST',
                     data: newRanks
-                }).done(function(data) {
+                }).done(function (data) {
                     $(".modal-backdrop").remove();
-                }).fail(function() {
+                }).fail(function () {
                     alert('fail');
                     $(".modal-backdrop").remove();
                 });
@@ -130,13 +134,12 @@
                         {{ form_widget(form._token) }}
                         {{ form_widget(form.name, {attr: {placeholder: 'メーカー名', class: 'form-control'}}) }}
                         {{ form_errors(form.name) }}
-
-                        {{ form_widget(form.id) }}
-                        {{ form_errors(form.id) }}
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-ec-conversion" id="add-button-submit">{{ 'common.label.save'|trans }}</button>
-                        <button type="reset" data-dismiss="modal" class="btn btn-ec-sub">{{ 'admin.common.label.cancel'|trans }}</button>
+                        <button type="submit" class="btn btn-ec-conversion"
+                                id="add-button-submit">{{ 'common.label.save'|trans }}</button>
+                        <button type="reset" data-dismiss="modal"
+                                class="btn btn-ec-sub">{{ 'admin.common.label.cancel'|trans }}</button>
                     </div>
                 </div>
             </form>
@@ -147,49 +150,50 @@
         <div class="c-contentsArea__primaryCol">
             <div class="c-primaryCol">
                 <div class="card rounded border-0 mb-4">
+
+                </div>
+                <div class="card rounded border-0 mb-4">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-12">
-                                <div class="d-inline-block" data-toggle="tooltip" data-placement="top"
-                                     title="{{ 'admin.plugin.maker.maker'|trans }}">
-                                        <span class="card-title">
-                                            <a href="{{ url('admin_plugin_maker_index') }}">{{ 'admin.plugin.maker.maker'|trans }}</a>
-                                        </span>
-                                </div>
+                                <a id="add-button" class="btn btn-default btn-ec-regular" data-toggle="modal"
+                                   data-target="#add-modal">{{ 'admin.plugin.maker.maker.register'|trans }}</a>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12">
-                                <a id="add-button" class="btn btn-default btn-ec-regular" data-toggle="modal" data-target="#add-modal">{{ 'admin.plugin.maker.maker.register'|trans }}</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% if arrMaker|length > 0 %}
-                    <div class="card rounded border-0 mb-4">
+                    {% if Makers|length > 0 %}
                         <div class="card-body p-0">
                             <div class="card rounded border-0 mb-2" id="maker_list">
                                 <ul class="list-group list-group-flush sortable-container">
-                                    {% for Maker in arrMaker %}
-                                        <li class="list-group-item sortable-item" data-rank="{{ Maker.rank }}" data-maker-id="{{ Maker.id }}">
+                                    {% for Maker in Makers %}
+                                        <li class="list-group-item sortable-item" data-rank="{{ Maker.sort_no }}"
+                                            data-maker-id="{{ Maker.id }}">
                                             <div class="row justify-content-around mode-view">
                                                 <div class="col-auto d-flex align-items-center">
                                                     <i class="fa fa-bars text-ec-gray"></i>
                                                 </div>
                                                 <div class="col d-flex">
-                                                    <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ Maker.name }}</a>
+                                                    <a class="edit" data-id="{{ Maker.id }}"
+                                                       data-name="{{ Maker.name }}" href="#"
+                                                       data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ Maker.name }}</a>
                                                 </div>
                                                 <div class="col-auto text-right">
-                                                    <a class="edit" data-id="{{ Maker.id }}" data-name="{{ Maker.name }}" href="#" data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}" data-toggle="tooltip" title="{{ 'common.label.edit'|trans }}">
-                                                        <i class="fa fa-pencil fa-lg text-secondary" aria-hidden="true"></i>
+                                                    <a class="edit" data-id="{{ Maker.id }}"
+                                                       data-name="{{ Maker.name }}" href="#"
+                                                       data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}"
+                                                       data-toggle="tooltip" title="{{ 'common.label.edit'|trans }}">
+                                                        <i class="fa fa-pencil fa-lg text-secondary"
+                                                           aria-hidden="true"></i>
                                                     </a>
                                                 </div>
                                                 <div class="col-auto text-right">
                                                     {% set delete_action = url('admin_plugin_maker_delete', {id: Maker.id}) %}
-                                                    <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }} data-method="post" data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}" data-toggle="tooltip" title="{{ 'common.label.delete'|trans }}">
-                                                        <i class="fa fa-close fa-lg text-secondary" aria-hidden="true"></i>
+                                                    <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }}
+                                                       data-method="delete"
+                                                       data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}"
+                                                       data-toggle="tooltip" title="{{ 'common.label.delete'|trans }}">
+                                                        <i class="fa fa-close fa-lg text-secondary"
+                                                           aria-hidden="true"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -198,14 +202,12 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                {% else %}
-                    <div class="card rounded border-0 no-record">
+                    {% else %}
                         <div class="card-body p-4">
                             <div class="text-center text-muted">{{ 'admin.plugin.maker.maker.no_records'|trans }}</div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

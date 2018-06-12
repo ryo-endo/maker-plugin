@@ -51,7 +51,7 @@ class MakerRepository extends ServiceEntityRepository
                 ->getQuery()
                 ->getSingleScalarResult();
             if (!$sortNo) {
-                $rank = 0;
+                $sortNo = 0;
             }
             $Maker->setSortNo($sortNo + 1);
 

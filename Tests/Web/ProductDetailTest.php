@@ -12,7 +12,6 @@ namespace Plugin\Maker\Tests\Web;
 use Eccube\Entity\Product;
 use Faker\Generator;
 use Plugin\Maker\Entity\Maker;
-use Plugin\Maker\Entity\ProductMaker;
 use Symfony\Component\HttpKernel\Client;
 use Eccube\Repository\ProductRepository;
 
@@ -28,9 +27,9 @@ class ProductDetailTest extends MakerWebCommon
     protected $Maker;
 
     /**
-     * @var ProductMaker $ProductMaker
+     * @var Product $Product
      */
-    protected $ProductMaker;
+    protected $Product;
 
     /**
      * @var ProductRepository
@@ -43,10 +42,10 @@ class ProductDetailTest extends MakerWebCommon
     public function setUp()
     {
         parent::setUp();
-        $this->deleteAllRows(['plg_product_maker', 'plg_maker']);
+        $this->deleteAllRows(['plg_maker']);
 
         $this->Maker = $this->createMaker();
-        $this->ProductMaker = $this->createProductMaker($this->Maker);
+        $this->Product = $this->createProductMaker($this->Maker);
         $this->productRepository = $this->container->get(ProductRepository::class);
 
     }
@@ -56,8 +55,10 @@ class ProductDetailTest extends MakerWebCommon
      */
     public function testProductDetailWhenHasMakerButUnRegister()
     {
-        $productId = $this->ProductMaker->getId();
-        $this->entityManager->remove($this->ProductMaker);
+        $productId = $this->Product->getId();
+        $this->Product->setMaker(null);
+        $this->Product->setMakerUrl(null);
+        $this->entityManager->persist($this->Product);
         $this->entityManager->flush();
         $crawler = $this->client->request('GET', $this->generateUrl('product_detail', ['id' => $productId]));
         $html = $crawler->filter('.ec-productRole__profile')->html();
@@ -70,15 +71,15 @@ class ProductDetailTest extends MakerWebCommon
      */
     public function testProductDetailWhenRegisterMakerWithoutMakerUrl()
     {
-        $productId = $this->ProductMaker->getId();
-        $this->ProductMaker->setMakerUrl('');
-        $this->entityManager->persist($this->ProductMaker);
+        $productId = $this->Product->getId();
+        $this->Product->setMakerUrl('');
+        $this->entityManager->persist($this->Product);
         $this->entityManager->flush();
 
         $crawler = $this->client->request('GET', $this->generateUrl('product_detail', ['id' => $productId]));
 
         $html = $crawler->filter('.ec-productRole__profile')->html();
-        $this->assertContains($this->ProductMaker->getMaker()->getName(), $html);
+        $this->assertContains($this->Product->getMaker()->getName(), $html);
         $this->assertNotContains('メーカーURL', $html);
     }
 
@@ -87,13 +88,13 @@ class ProductDetailTest extends MakerWebCommon
      */
     public function testProductDetailWhenRegisterMakerAndMakerUrl()
     {
-        $productId = $this->ProductMaker->getId();
+        $productId = $this->Product->getId();
 
         $crawler = $this->client->request('GET', $this->generateUrl('product_detail', ['id' => $productId]));
 
         $html = $crawler->filter('.ec-productRole__profile')->html();
-        $this->assertContains($this->ProductMaker->getMaker()->getName(), $html);
-        $this->assertContains($this->ProductMaker->getMakerUrl(), $html);
+        $this->assertContains($this->Product->getMaker()->getName(), $html);
+        $this->assertContains($this->Product->getMakerUrl(), $html);
     }
 
     /**
@@ -102,7 +103,7 @@ class ProductDetailTest extends MakerWebCommon
      * @param Maker   $Maker
      * @param Product $Product
      *
-     * @return ProductMaker
+     * @return Product
      */
     protected function createProductMaker(Maker $Maker, $Product = null)
     {
@@ -118,8 +119,8 @@ class ProductDetailTest extends MakerWebCommon
              */
             $faker = $this->getFaker();
             $formData = $this->createFormData();
-            $formData['plg_maker'] = '';
-            $formData['plg_maker_url'] = '';
+            $formData['Maker'] = $Maker->getId();
+            $formData['maker_url'] = $faker->url;
 
             /**
              * @var Client $client
@@ -142,13 +143,6 @@ class ProductDetailTest extends MakerWebCommon
             $Product = $this->productRepository->find($productId);
         }
 
-        $ProductMaker = new ProductMaker();
-        $ProductMaker->setMakerUrl($faker->url);
-        $ProductMaker->setId($Product->getId());
-        $ProductMaker->setMaker($Maker);
-        $this->entityManager->persist($ProductMaker);
-        $this->entityManager->flush();
-
-        return $ProductMaker;
+        return $Product;
     }
 }

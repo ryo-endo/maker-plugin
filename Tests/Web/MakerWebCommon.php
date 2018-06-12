@@ -73,24 +73,24 @@ class MakerWebCommon extends AbstractAdminWebTestCase
     /**
      * Create maker
      *
-     * @param int $rank
+     * @param int $sortNo
      *
      * @return Maker
      */
-    protected function createMaker($rank = null)
+    protected function createMaker($sortNo = null)
     {
         /**
          * @var Generator $faker
          */
         $faker = $this->getFaker();
 
-        if (!$rank) {
-            $rank = $faker->randomNumber(3);
+        if (!$sortNo) {
+            $sortNo = $faker->randomNumber(3);
         }
 
         $Maker = new Maker();
         $Maker->setName($faker->word);
-        $Maker->setRank($rank);
+        $Maker->setSortNo($sortNo);
 
         $this->entityManager->persist($Maker);
         $this->entityManager->flush();

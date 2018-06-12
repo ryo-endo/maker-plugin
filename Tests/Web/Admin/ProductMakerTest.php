@@ -14,15 +14,15 @@ use Faker\Generator;
 use Plugin\Maker\Entity\ProductMaker;
 use Plugin\Maker\Tests\Web\MakerWebCommon;
 use Symfony\Component\HttpKernel\Client;
-use Plugin\Maker\Repository\ProductMakerRepository;
+use Eccube\Repository\ProductRepository;
 
 /**
  * Class ProductMakerTest.
  */
 class ProductMakerTest extends MakerWebCommon
 {
-    const MAKER = 'plg_maker';
-    const MAKER_URL = 'plg_maker_url';
+    const MAKER = 'Maker';
+    const MAKER_URL = 'maker_url';
 
     /**
      * @var int
@@ -30,9 +30,9 @@ class ProductMakerTest extends MakerWebCommon
     protected $productId;
 
     /**
-     * @var ProductMakerRepository
+     * @var ProductRepository
      */
-    protected $productMakerRepository;
+    protected $productRepository;
 
     /**
      * Set up function.
@@ -40,9 +40,9 @@ class ProductMakerTest extends MakerWebCommon
     public function setUp()
     {
         parent::setUp();
-        $this->deleteAllRows(['plg_product_maker', 'plg_maker']);
+        $this->deleteAllRows(['plg_maker']);
 
-        $this->productMakerRepository = $this->container->get(ProductMakerRepository::class);
+        $this->productRepository = $this->container->get(ProductRepository::class);
     }
 
     /**
@@ -108,10 +108,10 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertNotContains($formData[self::MAKER_URL], $crawler->filter('body .c-container')->html());
 
         // Check database
-        $arrProductMaker = $this->productMakerRepository->findAll();
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = count($arrProductMaker);
-        $this->expected = 0;
+        $this->actual = $Product->getMaker();
+        $this->expected = null;
         $this->verify();
     }
 
@@ -143,10 +143,9 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('有効な値ではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->productMakerRepository->findAll();
-
-        $this->actual = count($arrProductMaker);
-        $this->expected = 0;
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
+        $this->actual = $Product->getMaker();
+        $this->expected = null;
         $this->verify();
     }
 
@@ -186,12 +185,10 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        /**
-         * @var ProductMaker $ProductMaker
-         */
-        $ProductMaker = $this->productMakerRepository->find($productId);
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = $ProductMaker->getMaker()->getId();
+
+        $this->actual = $Product->getMaker()->getId();
         $this->expected = $formData[self::MAKER];
         $this->verify();
     }
@@ -225,10 +222,10 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('有効なURLではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->productMakerRepository->findAll();
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = count($arrProductMaker);
-        $this->expected = 0;
+        $this->actual = $Product->getMaker();
+        $this->expected = null;
         $this->verify();
     }
 
@@ -268,12 +265,9 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        /**
-         * @var ProductMaker $ProductMaker
-         */
-        $ProductMaker = $this->productMakerRepository->find($productId);
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = array($ProductMaker->getMaker()->getId(), $ProductMaker->getMakerUrl());
+        $this->actual = array($Product->getMaker()->getId(), $Product->getMakerUrl());
         $this->expected = array($formData[self::MAKER], $formData[self::MAKER_URL]);
         $this->verify();
     }
@@ -356,10 +350,10 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        $arrProductMaker = $this->productMakerRepository->findAll();
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = count($arrProductMaker);
-        $this->expected = 0;
+        $this->actual = $Product->getMaker();
+        $this->expected = null;
         $this->verify();
     }
 
@@ -415,10 +409,10 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('有効な値ではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->productMakerRepository->findAll();
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = count($arrProductMaker);
-        $this->expected = 0;
+        $this->actual = $Product->getMaker();
+        $this->expected = null;
         $this->verify();
     }
 
@@ -473,9 +467,9 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        $ProductMaker = $this->productMakerRepository->find($productId);
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = array($ProductMaker->getMaker()->getId(), $ProductMaker->getMakerUrl());
+        $this->actual = array($Product->getMaker()->getId(), $Product->getMakerUrl());
         $this->expected = array($Maker->getId(), $formData[self::MAKER_URL]);
         $this->verify();
     }
@@ -528,10 +522,10 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('有効なURLではありません。', $crawler->filter('.form-error-message')->html());
 
         // Check database
-        $arrProductMaker = $this->productMakerRepository->findAll();
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = count($arrProductMaker);
-        $this->expected = 0;
+        $this->actual = $Product->getMaker();
+        $this->expected = null;
         $this->verify();
     }
 
@@ -589,9 +583,9 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check database
-        $ProductMaker = $this->productMakerRepository->find($productId);
+        $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);
 
-        $this->actual = array($ProductMaker->getMaker()->getId(), $ProductMaker->getMakerUrl());
+        $this->actual = array($Product->getMaker()->getId(), $Product->getMakerUrl());
         $this->expected = array($Maker->getId(), $formData[self::MAKER_URL]);
         $this->verify();
     }

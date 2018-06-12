@@ -32,7 +32,7 @@ class MakerControllerTest extends MakerWebCommon
     public function setUp()
     {
         parent::setUp();
-        $this->deleteAllRows(array('plg_product_maker', 'plg_maker'));
+        $this->deleteAllRows(array('plg_maker'));
 
         $this->makerRepository = $this->container->get(MakerRepository::class);
     }
@@ -77,7 +77,7 @@ class MakerControllerTest extends MakerWebCommon
             ['maker' => $formData]
         );
         // Check message
-        $this->assertContains('メーカー名が入力されていません。', $crawler->filter('#form1 .form-error-message')->html());
+        $this->assertContains('入力されていません。', $crawler->filter('#form1 .form-error-message')->html());
     }
 
     /**
@@ -145,7 +145,7 @@ class MakerControllerTest extends MakerWebCommon
         );
 
         // Check message
-        $this->assertContains('メーカー名が入力されていません。', $crawler->filter('#form1 .form-error-message')->html());
+        $this->assertContains('入力されていません。', $crawler->filter('#form1 .form-error-message')->html());
     }
 
     /**
@@ -255,7 +255,7 @@ class MakerControllerTest extends MakerWebCommon
         $faker = $this->getFaker();
         $id = $faker->randomNumber(3);
 
-        $this->client->request('POST', $this->generateUrl('admin_plugin_maker_delete', ['id' => $id]));
+        $this->client->request('DELETE', $this->generateUrl('admin_plugin_maker_delete', ['id' => $id]));
 
         $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
@@ -268,7 +268,7 @@ class MakerControllerTest extends MakerWebCommon
         $Maker = $this->createMaker();
 
         $this->client->request(
-            'POST',
+            'DELETE',
             $this->generateUrl('admin_plugin_maker_delete', ['id' => $Maker->getId()])
         );
         // Check redirect
@@ -292,18 +292,18 @@ class MakerControllerTest extends MakerWebCommon
     public function testMoveRankTestIsNotPostAjax()
     {
         $Maker01 = $this->createMaker(1);
-        $oldRank = $Maker01->getRank();
+        $oldSortNo = $Maker01->getSortNo();
         $Maker02 = $this->createMaker(2);
-        $newRank = $Maker02->getRank();
+        $newSortNo = $Maker02->getSortNo();
 
         $request = [
-            $Maker01->getId() => $newRank,
-            $Maker02->getId() => $oldRank,
+            $Maker01->getId() => $newSortNo,
+            $Maker02->getId() => $oldSortNo,
         ];
 
         $this->client->request(
             'GET',
-            $this->generateUrl('admin_plugin_maker_move_rank'),
+            $this->generateUrl('admin_plugin_maker_move_sort_no'),
             $request,
             [],
             [
@@ -312,8 +312,8 @@ class MakerControllerTest extends MakerWebCommon
             ]
         );
 
-        $this->actual = $Maker01->getRank();
-        $this->expected = $oldRank;
+        $this->actual = $Maker01->getSortNo();
+        $this->expected = $oldSortNo;
         $this->verify();
 
         $this->assertEquals(405, $this->client->getResponse()->getStatusCode());
@@ -325,18 +325,18 @@ class MakerControllerTest extends MakerWebCommon
     public function testMoveRank()
     {
         $Maker01 = $this->createMaker(1);
-        $oldRank = $Maker01->getRank();
+        $oldSortNo = $Maker01->getSortNo();
         $Maker02 = $this->createMaker(2);
-        $newRank = $Maker02->getRank();
+        $newSortNo = $Maker02->getSortNo();
 
         $request = [
-            $Maker01->getId() => $newRank,
-            $Maker02->getId() => $oldRank,
+            $Maker01->getId() => $newSortNo,
+            $Maker02->getId() => $oldSortNo,
         ];
 
         $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_move_rank'),
+            $this->generateUrl('admin_plugin_maker_move_sort_no'),
             $request,
             [],
             [
@@ -345,8 +345,8 @@ class MakerControllerTest extends MakerWebCommon
             ]
         );
 
-        $this->actual = $Maker01->getRank();
-        $this->expected = $newRank;
+        $this->actual = $Maker01->getSortNo();
+        $this->expected = $newSortNo;
         $this->verify();
     }
 
@@ -366,8 +366,7 @@ class MakerControllerTest extends MakerWebCommon
 
         $form = [
             Constant::TOKEN_NAME => 'dummy',
-            'name' => $faker->word,
-            'id' => $makerId,
+            'name' => $faker->word
         ];
 
         return $form;

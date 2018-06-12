@@ -50,6 +50,10 @@ class ProductTypeExtension extends AbstractTypeExtension
                 'choice_label' => 'name',
                 'choices' => $this->makerRepository->findBy([], ['sort_no' => 'DESC']),
                 'required' => false,
+                'eccube_form_options' => [
+                    'auto_render' => true,
+                    'form_theme' => ''
+                ]
             ])
             ->add('maker_url', TextType::class, [
                 'required' => false,

@@ -10,10 +10,10 @@
 
 namespace Plugin\Maker\Entity;
 
-use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping as ORM;
 use Eccube\Entity\AbstractEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 /**
  * Class Maker.
@@ -26,7 +26,7 @@ class Maker extends AbstractEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="maker_id", type="integer", options={"unsigned":true})
+     * @ORM\Column(name="id", type="integer", options={"unsigned":true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
@@ -35,16 +35,16 @@ class Maker extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="rank", type="integer", options={"unsigned":false, "default":0})
+     * @ORM\Column(name="sort_no", type="integer")
      */
-    private $rank;
+    private $sort_no;
 
     /**
      * @var \DateTime
@@ -59,20 +59,6 @@ class Maker extends AbstractEntity
      * @ORM\Column(name="update_date", type="datetimetz")
      */
     private $update_date;
-
-    /**
-     * Set maker id.
-     *
-     * @param string $id
-     *
-     * @return Maker
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Get id.
@@ -109,25 +95,25 @@ class Maker extends AbstractEntity
     }
 
     /**
-     * Get rank.
+     * Get sort_no.
      *
      * @return int
      */
-    public function getRank()
+    public function getSortNo()
     {
-        return $this->rank;
+        return $this->sort_no;
     }
 
     /**
-     * Set rank.
+     * Set sort no.
      *
-     * @param int $rank
+     * @param int $sortNo
      *
      * @return Maker
      */
-    public function setRank($rank)
+    public function setSortNo($sortNo)
     {
-        $this->rank = $rank;
+        $this->sort_no = $sortNo;
 
         return $this;
     }

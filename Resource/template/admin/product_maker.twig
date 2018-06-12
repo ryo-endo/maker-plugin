@@ -8,13 +8,23 @@
  * file that was distributed with this source code.
  */
 #}
-<div class="box accordion form-horizontal">
-    <div class="box-header toggle">
-        <h3 class="box-title">{{ 'admin.plugin.maker.product_maker.title'|trans }}<svg class="cb cb-angle-down icon_down"> <use xlink:href="#cb-angle-down" /></svg></h3>
-    </div><!-- /.box-header -->
-    <div class="box-body accpanel">
-        {{ form_row(form.maker) }}
-        {{ form_row(form.maker_url) }}
-        {{ form_row(form._token) }}
+<div class="row">
+    <div class="col-3">
+        <div class="d-inline-block">
+            <span>メーカー名</span>
+        </div>
+    </div>
+    <div class="col mb-2">
+        {{ form_widget(form.Maker) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-3">
+        <div class="d-inline-block">
+            <span>メーカーURL</span>
+        </div>
+    </div>
+    <div class="col mb-2">
+        {{ form_widget(form.maker_url) }}
     </div>
 </div>

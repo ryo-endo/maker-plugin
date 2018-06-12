@@ -11,11 +11,10 @@
 namespace Plugin\Maker\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class MakerType.
@@ -41,26 +40,15 @@ class MakerType extends AbstractType
      * Build config type form.
      *
      * @param FormBuilderInterface $builder
-     * @param array                $options
+     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'メーカー名',
-                'required' => true,
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'admin.plugin.maker.blank.error']),
+                    new Assert\NotBlank(),
                 ],
-            ])
-            ->add('id', HiddenType::class, []);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'admin_maker';
+            ]);
     }
 }

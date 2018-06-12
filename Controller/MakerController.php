@@ -13,14 +13,14 @@ namespace Plugin\Maker\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
 use Eccube\Controller\AbstractController;
 use Plugin\Maker\Entity\Maker;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Plugin\Maker\Repository\MakerRepository;
 use Plugin\Maker\Form\Type\MakerType;
+use Plugin\Maker\Repository\MakerRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use \Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class MakerController.
@@ -37,90 +37,88 @@ class MakerController extends AbstractController
      *
      * @param MakerRepository $makerRepository
      */
-    public function __construct(
-        MakerRepository $makerRepository
-    ) {
+    public function __construct(MakerRepository $makerRepository)
+    {
         $this->makerRepository = $makerRepository;
     }
 
     /**
      * List, add, edit maker.
      *
-     * @param Request     $request
-     * @param null        $id
+     * @param Request $request
+     * @param null $id
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response|array
      *
-     * @Route("/%eccube_admin_route%/plugin/maker/{id}", name="admin_plugin_maker_index", requirements={"id":"\d+"}, defaults={"index":0})
+     * @Route("/%eccube_admin_route%/plugin/maker/{id}", name="admin_plugin_maker_index", requirements={"id":"\d+"})
      * @Template("@Maker/admin/maker.twig")
      */
     public function index(Request $request, $id = null)
     {
-        $TargetMaker = new Maker();
+        $Maker = new Maker();
 
         if ($id) {
-            $TargetMaker = $this->makerRepository->find($id);
-            if (!$TargetMaker) {
+            $Maker = $this->makerRepository->find($id);
+            if (!$Maker) {
                 log_error('The Maker not found!', ['Maker id' => $id]);
                 throw new NotFoundHttpException();
             }
         }
 
         $form = $this->formFactory
-            ->createBuilder(MakerType::class, $TargetMaker)
+            ->createBuilder(MakerType::class, $Maker)
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             log_info('Maker add/edit start.');
-            $status = $this->makerRepository->save($TargetMaker);
+            $status = $this->makerRepository->save($Maker);
 
             if ($status) {
-                log_info('Maker add/edit success', ['Maker id' => $TargetMaker->getId()]);
+                log_info('Maker add/edit success', ['Maker id' => $Maker->getId()]);
                 $this->addSuccess('admin.plugin.maker.save.complete', 'admin');
 
                 return $this->redirectToRoute('admin_plugin_maker_index');
             } else {
-                log_info('Maker add/edit fail!', ['Maker id' => $TargetMaker->getId()]);
+                log_info('Maker add/edit fail!', ['Maker id' => $Maker->getId()]);
                 $this->addError('admin.plugin.maker.save.error', 'admin');
             }
         }
 
         /**
-         * @var ArrayCollection $arrMaker
+         * @var ArrayCollection $Makers
          */
-        $arrMaker = $this->makerRepository->findBy([], ['rank' => 'DESC']);
+        $Makers = $this->makerRepository->findBy([], ['sort_no' => 'DESC']);
 
         return [
             'form' => $form->createView(),
-            'arrMaker' => $arrMaker,
-            'TargetMaker' => $TargetMaker,
+            'Makers' => $Makers,
+            'Maker' => $Maker,
         ];
     }
 
     /**
      * Delete Maker.
      *
-     * @param Maker       $TargetMaker
+     * @param Maker $TargetMaker
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
-     * @Method("POST")
+     * @Method("DELETE")
      * @Route("/%eccube_admin_route%/plugin/maker/{id}/delete", name="admin_plugin_maker_delete", requirements={"id":"\d+"})
      */
-    public function delete(Maker $TargetMaker)
+    public function delete(Maker $Maker)
     {
         // Valid token
         $this->isTokenValid();
 
-        $status = $this->makerRepository->delete($TargetMaker);
-
-        if ($status === true) {
-            log_info('The maker delete success!', ['Maker id' => $TargetMaker->getId()]);
+        try {
+            $this->makerRepository->delete($Maker);
+            log_info('The maker delete success!', ['Maker id' => $Maker->getId()]);
             $this->addSuccess('admin.plugin.maker.delete.complete', 'admin');
-        } else {
-            log_info('The maker delete fail!', ['Maker id' => $TargetMaker->getId()]);
+        } catch (\Exception $e) {
+            log_info('The maker delete fail!', ['Maker id' => $Maker->getId()]);
             $this->addError('admin.plugin.maker.delete.error', 'admin');
         }
 
@@ -128,23 +126,23 @@ class MakerController extends AbstractController
     }
 
     /**
-     * Move rank with ajax.
+     * Move sort no with ajax.
      *
-     * @param Request     $request
+     * @param Request $request
      *
      * @return Response
      *
      * @throws \Exception
      *
      * @Method("POST")
-     * @Route("admin_plugin_maker_move_rank", name="admin_plugin_maker_move_rank")
+     * @Route("/%eccube_admin_route%/plugin/maker/move_sort_no", name="admin_plugin_maker_move_sort_no")
      */
-    public function moveRank(Request $request)
+    public function moveSortNo(Request $request)
     {
-        if ($request->isXmlHttpRequest()) {
-            $arrRank = $request->request->all();
-            $arrMoved = $this->makerRepository->moveMakerRank($arrRank);
-            log_info('Maker move rank', $arrMoved);
+        if ($request->isXmlHttpRequest() && $this->isTokenValid()) {
+            $sortNos = $request->request->all();
+            $movedSortNos = $this->makerRepository->moveSortNo($sortNos);
+            log_info('Maker move sort no', $movedSortNos);
         }
 
         return new Response('Successfully');

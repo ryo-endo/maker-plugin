@@ -29,7 +29,7 @@ class MakerRepository extends ServiceEntityRepository
      * @param RegistryInterface $registry
      * @param string $entityClass
      */
-    public function __construct(RegistryInterface $registry, string $entityClass = Maker::class)
+    public function __construct(RegistryInterface $registry, $entityClass = Maker::class)
     {
         parent::__construct($registry, $entityClass);
     }
@@ -44,31 +44,28 @@ class MakerRepository extends ServiceEntityRepository
     public function save($Maker)
     {
         $em = $this->getEntityManager();
-        try {
-            if (!$Maker->getId()) {
-                $rank = $this->createQueryBuilder('m')
-                    ->select('MAX(m.rank)')
-                    ->getQuery()
-                    ->getSingleScalarResult();
-                if (!$rank) {
-                    $rank = 0;
-                }
-                $Maker->setRank($rank + 1);
 
-                $em->createQueryBuilder()
-                    ->update('Plugin\Maker\Entity\Maker', 'm')
-                    ->set('m.rank', 'm.rank + 1')
-                    ->where('m.rank > :rank')
-                    ->setParameter('rank', $rank)
-                    ->getQuery()
-                    ->execute();
+        if (!$Maker->getId()) {
+            $sortNo = $this->createQueryBuilder('m')
+                ->select('MAX(m.sort_no)')// todo collacase
+                ->getQuery()
+                ->getSingleScalarResult();
+            if (!$sortNo) {
+                $rank = 0;
             }
+            $Maker->setSortNo($sortNo + 1);
 
-            $em->persist($Maker);
-            $em->flush($Maker);
-        } catch (\Exception $e) {
-            return false;
+            $em->createQueryBuilder()
+                ->update(Maker::class, 'm')
+                ->set('m.sort_no', 'm.sort_no + 1')
+                ->where('m.sort_no > :sort_no')
+                ->setParameter('sort_no', $sortNo)
+                ->getQuery()
+                ->execute();
         }
+
+        $em->persist($Maker);
+        $em->flush($Maker);
 
         return true;
     }
@@ -83,44 +80,33 @@ class MakerRepository extends ServiceEntityRepository
     public function delete($Maker)
     {
         $em = $this->getEntityManager();
-        try {
-            $em->remove($Maker);
-            $em->flush($Maker);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return true;
+        // todo foreign key check
+        $em->remove($Maker);
+        $em->flush($Maker);
     }
 
     /**
-     * Move rank.
+     * Move sortNo.
      *
-     * @param array $arrRank
+     * @param array $sortNos
      *
      * @return array
-     *
-     * @throws \Exception
      */
-    public function moveMakerRank(array $arrRank)
+    public function moveSortNo(array $sortNos)
     {
-        $arrMoveRank = [];
-        try {
-            foreach ($arrRank as $makerId => $rank) {
-                /* @var $Maker Maker */
-                $Maker = $this->find($makerId);
-                if ($Maker->getRank() == $rank) {
-                    continue;
-                }
-                $arrMoveRank[$makerId] = $rank;
-                $Maker->setRank($rank);
-                $this->getEntityManager()->persist($Maker);
-                $this->getEntityManager()->flush($Maker);
+        $results = [];
+        foreach ($sortNos as $id => $sortNo) {
+            /* @var $Maker Maker */
+            $Maker = $this->find($id);
+            if ($Maker->getSortNo() == $sortNo) {
+                continue;
             }
-        } catch (\Exception $e) {
-            throw $e;
+            $results[$id] = $sortNos;
+            $Maker->setSortNo($sortNo);
+            $this->getEntityManager()->persist($Maker);
+            $this->getEntityManager()->flush($Maker);
         }
 
-        return $arrMoveRank;
+        return $results;
     }
 }

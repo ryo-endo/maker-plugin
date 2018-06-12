@@ -105,7 +105,7 @@ class ProductMakerTest extends MakerWebCommon
         $this->assertContains('登録が完了しました。', $crawler->filter('.alert')->html());
 
         // Check layout
-        $this->assertNotContains($formData[self::MAKER_URL], $crawler->filter('body .c-container')->html());
+        $this->assertContains($formData[self::MAKER_URL], $crawler->filter('body .c-container')->html());
 
         // Check database
         $Product = $this->productRepository->findOneBy([], ['id' => 'DESC']);

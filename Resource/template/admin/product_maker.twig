@@ -8,7 +8,9 @@
  * file that was distributed with this source code.
  */
 #}
-{%- block form_row -%}
+{%- extends '@admin/Form/bootstrap_4_horizontal_layout.html.twig' -%}
+
+{%- block _admin_product_Maker_row -%}
     <div class="row">
         <div class="col-3">
             <div class="d-inline-block">
@@ -22,4 +24,20 @@
             {{- form_errors(form) -}}
         </div>
     </div>
-{%- endblock form_row -%}
+{%- endblock _admin_product_Maker_row -%}
+
+{%- block _admin_product_maker_url_row -%}
+    <div class="row">
+        <div class="col-3">
+            <div class="d-inline-block">
+                <span>
+                    {{ form.vars.label|trans }}
+                </span>
+            </div>
+        </div>
+        <div class="col mb-2">
+            {{- form_widget(form) -}}
+            {{- form_errors(form) -}}
+        </div>
+    </div>
+{%- endblock _admin_product_maker_url_row -%}

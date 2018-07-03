@@ -46,16 +46,18 @@ class ProductTypeExtension extends AbstractTypeExtension
     {
         $builder
             ->add('Maker', EntityType::class, [
+                'label' => 'admin.plugin.maker.product_maker.maker',
                 'class' => Maker::class,
                 'choice_label' => 'name',
                 'choices' => $this->makerRepository->findBy([], ['sort_no' => 'DESC']),
                 'required' => false,
                 'eccube_form_options' => [
                     'auto_render' => true,
-                    'form_theme' => ''
+                    'form_theme' => '@Maker/admin/product_maker.twig'
                 ]
             ])
             ->add('maker_url', TextType::class, [
+                'label' => 'admin.plugin.maker.product_maker.maker_url',
                 'required' => false,
                 'constraints' => [
                     new Url(),
@@ -65,7 +67,7 @@ class ProductTypeExtension extends AbstractTypeExtension
                 ],
                 'eccube_form_options' => [
                     'auto_render' => true,
-                    'form_theme' => ''
+                    'form_theme' => '@Maker/admin/product_maker.twig'
                 ]
             ]);
     }

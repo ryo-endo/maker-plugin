@@ -16,4 +16,6 @@ return [
     'admin.plugin.maker.product_maker.title' => 'メーカー設定',
     'admin.plugin.maker.maker.add' => '追加',
     'admin.plugin.maker.maker.update' => '更新',
+    'admin.plugin.maker.product_maker.maker' => 'メーカー名',
+    'admin.plugin.maker.product_maker.maker_url' => 'メーカーURL',
 ];

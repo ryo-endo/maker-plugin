@@ -8,23 +8,18 @@
  * file that was distributed with this source code.
  */
 #}
-<div class="row">
-    <div class="col-3">
-        <div class="d-inline-block">
-            <span>メーカー名</span>
+{%- block form_row -%}
+    <div class="row">
+        <div class="col-3">
+            <div class="d-inline-block">
+                <span>
+                    {{ form.vars.label|trans }}
+                </span>
+            </div>
+        </div>
+        <div class="col mb-2">
+            {{- form_widget(form) -}}
+            {{- form_errors(form) -}}
         </div>
     </div>
-    <div class="col mb-2">
-        {{ form_widget(form.Maker) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col-3">
-        <div class="d-inline-block">
-            <span>メーカーURL</span>
-        </div>
-    </div>
-    <div class="col mb-2">
-        {{ form_widget(form.maker_url) }}
-    </div>
-</div>
+{%- endblock form_row -%}

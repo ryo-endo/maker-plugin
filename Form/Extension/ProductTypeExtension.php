@@ -65,7 +65,7 @@ class ProductTypeExtension extends AbstractTypeExtension
                 ],
                 'eccube_form_options' => [
                     'auto_render' => true,
-                    'form_theme' => '@Maker/admin/product_maker.twig'
+                    'form_theme' => ''
                 ]
             ]);
     }

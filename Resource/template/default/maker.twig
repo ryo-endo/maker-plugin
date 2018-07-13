@@ -1,19 +1,23 @@
 {#
 /*
- * This file is part of the Maker plugin
+ * This file is part of EC-CUBE
  *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 #}
-<div class="plugin_maker_code">
-    {% if Product.Maker is not empty %}
-        {% if Product.maker_url is not empty %}
-            <p class="item_code">{{ 'admin.plugin.maker.maker'|trans }}： <a href="{{ Maker.url }}" target="_blank">{{ Maker.name }}</a></p>
-        {% else %}
-            <p class="item_code">{{ 'admin.plugin.maker.maker'|trans }}： {{ Maker.name }}</p>
+{% block maker %}
+    <div class="plugin_maker_code">
+        {% if Product.Maker is not empty %}
+            {% if Product.maker_url is not empty %}
+                <p class="item_code">{{ 'maker.admin.maker'|trans }}： <a href="{{ Product.maker_url }}" target="_blank">{{ Product.Maker.name }}</a></p>
+            {% else %}
+                <p class="item_code">{{ 'maker.admin.maker'|trans }}： {{ Product.Maker.name }}</p>
+            {% endif %}
         {% endif %}
-    {% endif %}
-</div>
+    </div>
+{% endblock %}

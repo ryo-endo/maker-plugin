@@ -1,12 +1,16 @@
 <?php
+
 /*
- * This file is part of the Maker plugin
+ * This file is part of EC-CUBE
  *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Plugin\Maker\Tests\Web;
 
 use Eccube\Entity\Product;
@@ -22,12 +26,12 @@ use Eccube\Repository\ProductRepository;
 class ProductDetailTest extends MakerWebCommon
 {
     /**
-     * @var Maker $Maker
+     * @var Maker
      */
     protected $Maker;
 
     /**
-     * @var Product $Product
+     * @var Product
      */
     protected $Product;
 
@@ -47,7 +51,6 @@ class ProductDetailTest extends MakerWebCommon
         $this->Maker = $this->createMaker();
         $this->Product = $this->createProductMaker($this->Maker);
         $this->productRepository = $this->container->get(ProductRepository::class);
-
     }
 
     /**
@@ -55,7 +58,7 @@ class ProductDetailTest extends MakerWebCommon
      */
     public function testProductDetailWhenHasMakerButUnRegister()
     {
-        $this->markTestSkipped("Skipped due to need include template on twig file manually");
+        $this->markTestSkipped('Skipped due to need include template on twig file manually');
         $productId = $this->Product->getId();
         $this->Product->setMaker(null);
         $this->Product->setMakerUrl(null);
@@ -72,7 +75,7 @@ class ProductDetailTest extends MakerWebCommon
      */
     public function testProductDetailWhenRegisterMakerWithoutMakerUrl()
     {
-        $this->markTestSkipped("Skipped due to need include template on twig file manually");
+        $this->markTestSkipped('Skipped due to need include template on twig file manually');
         $productId = $this->Product->getId();
         $this->Product->setMakerUrl('');
         $this->entityManager->persist($this->Product);
@@ -90,7 +93,7 @@ class ProductDetailTest extends MakerWebCommon
      */
     public function testProductDetailWhenRegisterMakerAndMakerUrl()
     {
-        $this->markTestSkipped("Skipped due to need include template on twig file manually");
+        $this->markTestSkipped('Skipped due to need include template on twig file manually');
         $productId = $this->Product->getId();
 
         $crawler = $this->client->request('GET', $this->generateUrl('product_detail', ['id' => $productId]));
@@ -111,14 +114,14 @@ class ProductDetailTest extends MakerWebCommon
     protected function createProductMaker(Maker $Maker, $Product = null)
     {
         /**
-         * @var Generator $faker
+         * @var Generator
          */
         $faker = $this->getFaker();
 
         if (!$Product) {
             // New product
             /**
-             * @var Generator $faker
+             * @var Generator
              */
             $faker = $this->getFaker();
             $formData = $this->createFormData();
@@ -126,7 +129,7 @@ class ProductDetailTest extends MakerWebCommon
             $formData['maker_url'] = $faker->url;
 
             /**
-             * @var Client $client
+             * @var Client
              */
             $client = $this->client;
             $client->request(
@@ -138,7 +141,7 @@ class ProductDetailTest extends MakerWebCommon
             $this->assertTrue($client->getResponse()->isRedirection());
 
             $arrTmp = explode('/', $client->getResponse()->getTargetUrl());
-            $productId = $arrTmp[count($arrTmp)-2];
+            $productId = $arrTmp[count($arrTmp) - 2];
 
             $client->followRedirect();
 

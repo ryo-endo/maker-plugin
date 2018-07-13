@@ -1,8 +1,11 @@
 <?php
+
 /*
- * This file is part of the Maker plugin
+ * This file is part of EC-CUBE
  *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -32,7 +35,7 @@ class MakerControllerTest extends MakerWebCommon
     public function setUp()
     {
         parent::setUp();
-        $this->deleteAllRows(array('plg_maker'));
+        $this->deleteAllRows(['plg_maker']);
 
         $this->makerRepository = $this->container->get(MakerRepository::class);
     }
@@ -42,7 +45,7 @@ class MakerControllerTest extends MakerWebCommon
      */
     public function testMakerRender()
     {
-        $crawler = $this->client->request('GET', $this->generateUrl('admin_plugin_maker_index'));
+        $crawler = $this->client->request('GET', $this->generateUrl('maker_admin_index'));
         $this->assertContains('データはありません', $crawler->filter('.no-record')->html());
     }
 
@@ -56,7 +59,7 @@ class MakerControllerTest extends MakerWebCommon
             $this->createMaker($i);
         }
 
-        $crawler = $this->client->request('GET', $this->generateUrl('admin_plugin_maker_index'));
+        $crawler = $this->client->request('GET', $this->generateUrl('maker_admin_index'));
         $number = count($crawler->filter('.sortable-container .sortable-item'));
 
         $this->actual = $number;
@@ -73,7 +76,7 @@ class MakerControllerTest extends MakerWebCommon
         $formData['name'] = '';
         $crawler = $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_index'),
+            $this->generateUrl('maker_admin_index'),
             ['maker' => $formData]
         );
         // Check message
@@ -91,7 +94,7 @@ class MakerControllerTest extends MakerWebCommon
         $formData['name'] = $Maker->getName();
         $crawler = $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_index'),
+            $this->generateUrl('maker_admin_index'),
             ['maker' => $formData]
         );
 
@@ -107,15 +110,15 @@ class MakerControllerTest extends MakerWebCommon
         $formData = $this->createMakerFormData();
         $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_index'),
+            $this->generateUrl('maker_admin_index'),
             ['maker' => $formData]
         );
 
         // Check redirect
-        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_plugin_maker_index')));
+        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('maker_admin_index')));
 
         /**
-         * @var Crawler $crawler
+         * @var Crawler
          */
         $crawler = $this->client->followRedirect();
         // Check message
@@ -136,11 +139,11 @@ class MakerControllerTest extends MakerWebCommon
         $formData['name'] = '';
 
         /**
-         * @var Crawler $crawler
+         * @var Crawler
          */
         $crawler = $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_index', ['id' => $Maker->getId()]),
+            $this->generateUrl('maker_admin_index', ['id' => $Maker->getId()]),
             ['maker' => $formData]
         );
 
@@ -160,11 +163,11 @@ class MakerControllerTest extends MakerWebCommon
         $formData['name'] = $MakerBefore->getName();
 
         /**
-         * @var Crawler $crawler
+         * @var Crawler
          */
         $crawler = $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_index', ['id' => $Maker->getId()]),
+            $this->generateUrl('maker_admin_index', ['id' => $Maker->getId()]),
             ['maker' => $formData]
         );
 
@@ -183,7 +186,7 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_index', ['id' => $editId]),
+            $this->generateUrl('maker_admin_index', ['id' => $editId]),
             ['_maker' => $formData]
         );
 
@@ -200,12 +203,12 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_index', ['id' => $Maker->getId()]),
+            $this->generateUrl('maker_admin_index', ['id' => $Maker->getId()]),
             ['maker' => $formData]
         );
 
         // Check redirect
-        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_plugin_maker_index')));
+        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('maker_admin_index')));
 
         $crawler = $this->client->followRedirect();
         // Check message
@@ -225,7 +228,7 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'GET',
-            $this->generateUrl('admin_plugin_maker_delete', ['id' => $Maker->getId()])
+            $this->generateUrl('maker_admin_index', ['id' => $Maker->getId()])
         );
 
         $this->assertEquals(405, $this->client->getResponse()->getStatusCode());
@@ -238,7 +241,7 @@ class MakerControllerTest extends MakerWebCommon
     {
         $this->client->request(
             'DELETE',
-            $this->generateUrl('admin_plugin_maker_delete', ['id' => null])
+            $this->generateUrl('maker_admin_delete', ['id' => null])
         );
 
         $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
@@ -250,12 +253,12 @@ class MakerControllerTest extends MakerWebCommon
     public function testMakerDeleteIdIsNotExist()
     {
         /**
-         * @var Generator $faker
+         * @var Generator
          */
         $faker = $this->getFaker();
         $id = $faker->randomNumber(3);
 
-        $this->client->request('DELETE', $this->generateUrl('admin_plugin_maker_delete', ['id' => $id]));
+        $this->client->request('DELETE', $this->generateUrl('maker_admin_delete', ['id' => $id]));
 
         $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
@@ -269,10 +272,10 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'DELETE',
-            $this->generateUrl('admin_plugin_maker_delete', ['id' => $Maker->getId()])
+            $this->generateUrl('maker_admin_delete', ['id' => $Maker->getId()])
         );
         // Check redirect
-        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('admin_plugin_maker_index')));
+        $this->assertTrue($this->client->getResponse()->isRedirect($this->generateUrl('maker_admin_index')));
 
         $crawler = $this->client->followRedirect();
 
@@ -303,7 +306,7 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'GET',
-            $this->generateUrl('admin_plugin_maker_move_sort_no'),
+            $this->generateUrl('maker_admin_move_sort_no'),
             $request,
             [],
             [
@@ -336,7 +339,7 @@ class MakerControllerTest extends MakerWebCommon
 
         $this->client->request(
             'POST',
-            $this->generateUrl('admin_plugin_maker_move_sort_no'),
+            $this->generateUrl('maker_admin_move_sort_no'),
             $request,
             [],
             [
@@ -360,13 +363,13 @@ class MakerControllerTest extends MakerWebCommon
     private function createMakerFormData($makerId = null)
     {
         /**
-         * @var Generator $faker
+         * @var Generator
          */
         $faker = $this->getFaker();
 
         $form = [
             Constant::TOKEN_NAME => 'dummy',
-            'name' => $faker->word
+            'name' => $faker->word,
         ];
 
         return $form;

@@ -1,8 +1,11 @@
 <?php
+
 /*
- * This file is part of the Maker plugin
+ * This file is part of EC-CUBE
  *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +20,6 @@ use Plugin\Maker\Entity\Maker;
 
 /**
  * Class MakerWebTestCase
- * @package Plugin\Maker\Tests\Web
  */
 class MakerWebCommon extends AbstractAdminWebTestCase
 {
@@ -49,7 +51,7 @@ class MakerWebCommon extends AbstractAdminWebTestCase
                 'stock_unlimited' => 0,
                 'code' => $faker->word,
                 'sale_limit' => null,
-                'delivery_duration' => ''
+                'delivery_duration' => '',
             ],
             'name' => $faker->word,
             'product_image' => [],
@@ -65,8 +67,9 @@ class MakerWebCommon extends AbstractAdminWebTestCase
             'images' => null,
             'add_images' => null,
             'delete_images' => null,
-            Constant::TOKEN_NAME => 'dummy'
+            Constant::TOKEN_NAME => 'dummy',
         ];
+
         return $form;
     }
 
@@ -80,7 +83,7 @@ class MakerWebCommon extends AbstractAdminWebTestCase
     protected function createMaker($sortNo = null)
     {
         /**
-         * @var Generator $faker
+         * @var Generator
          */
         $faker = $this->getFaker();
 

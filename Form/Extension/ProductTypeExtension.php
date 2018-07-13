@@ -13,6 +13,7 @@
 
 namespace Plugin\Maker\Form\Extension;
 
+use Eccube\Common\EccubeConfig;
 use Eccube\Form\Type\Admin\ProductType;
 use Plugin\Maker\Entity\Maker;
 use Plugin\Maker\Repository\MakerRepository;
@@ -20,10 +21,15 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\Url;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ProductTypeExtension extends AbstractTypeExtension
 {
+    /**
+     * @var EccubeConfig
+     */
+    private $eccubeConfig;
+
     /**
      * @var MakerRepository
      */
@@ -32,10 +38,12 @@ class ProductTypeExtension extends AbstractTypeExtension
     /**
      * ProductTypeExtension constructor.
      *
+     * @param EccubeConfig $eccubeConfig
      * @param MakerRepository $makerRepository
      */
-    public function __construct(MakerRepository $makerRepository)
+    public function __construct(EccubeConfig $eccubeConfig, MakerRepository $makerRepository)
     {
+        $this->eccubeConfig = $eccubeConfig;
         $this->makerRepository = $makerRepository;
     }
 
@@ -46,29 +54,29 @@ class ProductTypeExtension extends AbstractTypeExtension
     {
         $builder
             ->add('Maker', EntityType::class, [
-                'label' => 'admin.plugin.maker.product_maker.maker',
+                'label' => 'maker.admin.product_maker.maker',
                 'class' => Maker::class,
                 'choice_label' => 'name',
                 'choices' => $this->makerRepository->findBy([], ['sort_no' => 'DESC']),
                 'required' => false,
                 'eccube_form_options' => [
                     'auto_render' => true,
-                    'form_theme' => '@Maker/admin/product_maker.twig'
-                ]
+                ],
             ])
             ->add('maker_url', TextType::class, [
-                'label' => 'admin.plugin.maker.product_maker.maker_url',
+                'label' => 'maker.admin.product_maker.maker_url',
                 'required' => false,
-                'constraints' => [
-                    new Url(),
-                ],
                 'attr' => [
-                    'placeholder' => 'admin.plugin.maker.placeholder.url',
+                    'maxlength' => $this->eccubeConfig['eccube_url_len'],
+                    'placeholder' => 'maker.admin.placeholder.url',
                 ],
                 'eccube_form_options' => [
                     'auto_render' => true,
-                    'form_theme' => '@Maker/admin/product_maker.twig'
-                ]
+                ],
+                'constraints' => [
+                    new Assert\Url(),
+                    new Assert\Length(['max' => $this->eccubeConfig['eccube_url_len']]),
+                ],
             ]);
     }
 

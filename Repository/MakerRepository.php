@@ -1,8 +1,11 @@
 <?php
+
 /*
- * This file is part of the Maker plugin
+ * This file is part of EC-CUBE
  *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -22,7 +25,6 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class MakerRepository extends ServiceEntityRepository
 {
-
     /**
      * MakerRepository constructor.
      *
@@ -35,11 +37,15 @@ class MakerRepository extends ServiceEntityRepository
     }
 
     /**
-     * Save method.
+     * Maker create/update
      *
-     * @param Maker $Maker
+     * @param $Maker
      *
      * @return bool
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function save($Maker)
     {
@@ -47,7 +53,7 @@ class MakerRepository extends ServiceEntityRepository
 
         if (!$Maker->getId()) {
             $sortNo = $this->createQueryBuilder('m')
-                ->select('MAX(m.sort_no)')// todo collacase
+                ->select('MAX(m.sort_no)')
                 ->getQuery()
                 ->getSingleScalarResult();
             if (!$sortNo) {
@@ -73,14 +79,13 @@ class MakerRepository extends ServiceEntityRepository
     /**
      * Delete maker.
      *
-     * @param Maker $Maker
+     * @param $Maker
      *
-     * @return bool
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function delete($Maker)
     {
         $em = $this->getEntityManager();
-        // todo foreign key check
         $em->remove($Maker);
         $em->flush($Maker);
     }
@@ -91,6 +96,8 @@ class MakerRepository extends ServiceEntityRepository
      * @param array $sortNos
      *
      * @return array
+     *
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function moveSortNo(array $sortNos)
     {

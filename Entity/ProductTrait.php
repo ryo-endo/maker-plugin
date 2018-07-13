@@ -1,5 +1,16 @@
 <?php
 
+/*
+ * This file is part of EC-CUBE
+ *
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Plugin\Maker\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +26,7 @@ trait ProductTrait
      *
      * @ORM\ManyToOne(targetEntity="Plugin\Maker\Entity\Maker")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="plg_maker_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="maker_id", referencedColumnName="id")
      * })
      */
     private $Maker;
@@ -23,7 +34,7 @@ trait ProductTrait
     /**
      * @var string
      *
-     * @ORM\Column(name="plg_maker_url", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="maker_url", type="string", length=1024, nullable=true)
      */
     private $maker_url;
 
@@ -37,6 +48,7 @@ trait ProductTrait
 
     /**
      * @param Maker|null $Maker
+     *
      * @return $this
      */
     public function setMaker(Maker $Maker = null)
@@ -61,6 +73,4 @@ trait ProductTrait
     {
         $this->maker_url = $maker_url;
     }
-
-
 }

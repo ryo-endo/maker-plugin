@@ -1,38 +1,26 @@
 {#
-/*
- * This file is part of the Maker plugin
- *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
 #}
-{% extends '@admin/styleguide_frame.twig' %}
+{% extends '@admin/default_frame.twig' %}
 
 {% set menus = ['product', 'maker'] %}
 
-{% block title %}{{ 'admin.plugin.maker.title'|trans }}{% endblock %}
-{% block sub_title %}{{ 'admin.plugin.maker.sub_title'|trans }}{% endblock %}
+{% block title %}{{ 'maker.admin.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'maker.admin.sub_title'|trans }}{% endblock %}
+
 {% block stylesheet %}
-    <style type="text/css">
-        .attention {
-            color: #f00;
-        }
-
-        .sortable_list .icon_sortable {
-            width: 2%;
-        }
-
-        .box-title-maker a:last-child {
-            font-weight: bold;
-        }
-
-        .box-title-maker a:link, .box-title-maker a:visited, .box-title-maker a:hover, .box-title-maker a:active {
-            color: #444;
+    <style>
+        .list-group-item:hover {
+            z-index: inherit;
         }
     </style>
-
 {% endblock stylesheet %}
 
 {% block javascript %}
@@ -41,173 +29,196 @@
     <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
     <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
     <script>
-        var addButton = '{{ 'admin.plugin.maker.maker.add'|trans }}';
-        var editButton = '{{ 'admin.plugin.maker.maker.update'|trans }}';
-        var modalError = '{{ not form.vars.valid }}';
-        $(function () {
-            var myModal = $('#add-modal');
-            if (modalError) {
-                myModal.modal();
-            }
-
-            var oldRanks = [];
-            // 画面の中のrank一覧を保持
-            $(".sortable-container > .sortable-item").each(function () {
-                oldRanks.push(this.dataset.rank);
+        $(function() {
+            // 初期表示時のsort noを保持.
+            var oldSortNos = [];
+            $('.sortable-item').each(function() {
+                oldSortNos.push(this.dataset.sortNo);
             });
 
-            // reverse sort
-            oldRanks.sort(function (a, b) {
+            oldSortNos.sort(function(a, b) {
                 return a - b;
             }).reverse();
 
-            $(".sortable-container").sortable({
-                items: '> .sortable-item',
-                cursor: 'move',
-                update: function (e, ui) {
-                    $("body").append($('<div class="modal-backdrop show"></div>'));
-                    updateRank();
-                }
-            });
-
-            var updateRank = function () {
-                // 並び替え後にrankを更新
-                var newRanks = {};
+            // 並び替え後にsort noを更新
+            var updateSortNo = function() {
+                var newSortNos = {};
                 var i = 0;
-                $(".sortable-container > .sortable-item").each(function () {
-                    newRanks[this.dataset.makerId] = oldRanks[i];
+                $('.sortable-item').each(function() {
+                    newSortNos[this.dataset.id] = oldSortNos[i];
                     i++;
                 });
-
                 $.ajax({
-                    url: '{{ url('admin_plugin_maker_move_sort_no') }}',
+                    url: '{{ url('maker_admin_move_sort_no') }}',
                     type: 'POST',
-                    data: newRanks
-                }).done(function (data) {
-                    $(".modal-backdrop").remove();
-                }).fail(function () {
-                    alert('fail');
-                    $(".modal-backdrop").remove();
+                    headers: {
+                        'x-csrf-token': $('meta[name="x-csrf-token"]').attr('content')
+                    },
+                    data: newSortNos
+                }).always(function() {
+                    $('.modal-backdrop').remove();
                 });
             };
 
-            $('.edit').on('click', function (e) {
-                e.preventDefault();
-                var makerId = $(this).data('id');
-                var makerName = $(this).data('name');
-                var editUrl = $(this).data('url');
+            // 最初と最後の↑↓を再描画
+            var redrawDisableAllows = function() {
+                var items = $('.sortable-item');
+                items.find('a').removeClass('disabled');
+                items.first().find('a.action-up').addClass('disabled');
+                items.last().find('a.action-down').addClass('disabled');
+            };
 
-                $('#maker_name').val(makerName);
-                $('#maker_id').val(makerId);
-                $('#form1').attr('action', editUrl);
-                $('button#add-button-submit').text(editButton);
-                myModal.modal();
-            });
+            // オーバレイ後, 表示順の更新を行う
+            var moveSortNo = function() {
+                $('body').append($('<div class="modal-backdrop show"></div>'));
+                updateSortNo();
+                redrawDisableAllows();
+            };
 
-            // Clear old data
-            myModal.on('hidden.bs.modal', function (e) {
-                var modal = $(this);
-                modal.find('#maker_name').val('').css('background-color', '#fff');
-                modal.find('#maker_id').val('');
-                modal.find('#form1').attr('action', '');
-                modal.find('button#add-button-submit').text(addButton);
-                modal.find('.attention').hide();
-                if (modalError) {
-                    window.location.href = "{{ url('admin_plugin_maker_index') }}";
+            // Drag and Drop
+            $('.sortable-container').sortable({
+                items: '> .sortable-item',
+                cursor: 'move',
+                update: function(e, ui) {
+                    moveSortNo();
                 }
             });
-        });
 
-        function changeAction(action) {
-            document.form1.action = action;
-        }
+            // Up
+            $('.sortable-item').on('click', 'a.action-up', function(event) {
+                event.preventDefault();
+                var current = $(this).parents('li');
+                if (current.prev().hasClass('sortable-item')) {
+                    current.prev().before(current);
+                    moveSortNo();
+                }
+            });
+
+            // Down
+            $('.sortable-item').on('click', 'a.action-down', function(event) {
+                event.preventDefault();
+                var current = $(this).parents('li');
+                if (current.next().hasClass('sortable-item')) {
+                    current.next().after(current);
+                    moveSortNo();
+                }
+            });
+
+            // 編集
+            $('.sortable-item').on('click', 'a.action-edit', function(event) {
+                event.preventDefault();
+                var current = $(this).parents('li');
+                current.find('.mode-view').addClass('d-none');
+                current.find('.mode-edit').removeClass('d-none');
+            });
+
+            // 編集キャンセル
+            $('.sortable-item').on('click', 'button.action-edit-cancel', function(event) {
+                event.preventDefault();
+                var current = $(this).parents('li');
+                current.find('[data-origin-value]').each(function(event) {
+                    $(this).val($(this).attr('data-origin-value'));
+                });
+                current.find('.mode-view').removeClass('d-none');
+                current.find('.mode-edit').addClass('d-none');
+            });
+
+            // 編集時, エラーがあれば入力欄を表示.
+            $('.sortable-item').find('.is-invalid').each(function(event) {
+                var current = $(this).parents('li');
+                current.find('.mode-view').addClass('d-none');
+                current.find('.mode-edit').removeClass('d-none');
+            });
+        });
     </script>
-{% endblock %}
+{% endblock javascript %}
 
 {% block main %}
-    <div class="modal fade" id="add-modal" tabindex="-1" role="dialog"
-         aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form role="form" class="form-horizontal" name="form1" id="form1" method="post">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        {{ form_widget(form._token) }}
-                        {{ form_widget(form.name, {attr: {placeholder: 'メーカー名', class: 'form-control'}}) }}
-                        {{ form_errors(form.name) }}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-ec-conversion"
-                                id="add-button-submit">{{ 'common.label.save'|trans }}</button>
-                        <button type="reset" data-dismiss="modal"
-                                class="btn btn-ec-sub">{{ 'admin.common.label.cancel'|trans }}</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <div class="c-contentsArea__cols">
         <div class="c-contentsArea__primaryCol">
             <div class="c-primaryCol">
                 <div class="card rounded border-0 mb-4">
+                    <div class="card-body p-0">
+                        <div class="card rounded border-0 mb-2">
+                            <ul class="list-group list-group-flush sortable-container">
+                                <li class="list-group-item">
+                                    <form role="form" class="form-row" method="post" action="{{ url('maker_admin_index') }}">
+                                        {{ form_widget(form._token) }}
+                                        <div class="col-auto align-items-center">
+                                            {{ form_widget(form.name) }}
+                                            {{ form_errors(form.name) }}
+                                        </div>
+                                        <div class="col-auto align-items-center">
+                                            <button class="btn btn-ec-regular" type="submit">
+                                                {{ 'maker.admin.maker.register'|trans }}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </li>
+                                {% for Maker in Makers %}
+                                    <li class="list-group-item sortable-item" data-id="{{ Maker.id }}" data-sort-no="{{ Maker.sortNo }}">
+                                        <div class="row justify-content-around mode-view">
+                                            <div class="col-auto d-flex align-items-center"><i class="fa fa-bars text-ec-gray"></i></div>
+                                            <div class="col d-flex align-items-center"><a>{{ Maker.name }}</a>
+                                            </div>
+                                            <div class="col-auto text-right">
+                                                <a class="btn btn-ec-actionIcon mr-3 action-up{% if loop.first %} disabled{% endif %}" href="#"
+                                                   data-toggle="tooltip" data-placement="top" title="{{ 'admin.common.label.move.up'|trans }}">
+                                                    <i class="fa fa-arrow-up fa-lg text-secondary"></i>
+                                                </a>
+                                                <a class="btn btn-ec-actionIcon mr-3 action-down{% if loop.last %} disabled{% endif %}" href="#"
+                                                   data-toggle="tooltip" data-placement="top" title="{{ 'admin.common.label.move.down'|trans }}">
+                                                    <i class="fa fa-arrow-down fa-lg text-secondary"></i>
+                                                </a>
+                                                <a class="btn btn-ec-actionIcon mr-3 action-edit" data-toggle="tooltip" data-placement="top" title="{{ 'maker.admin.maker.edit'|trans }}">
+                                                    <i class="fa fa-pencil fa-lg text-secondary"></i>
+                                                </a>
+                                                <a class="btn btn-ec-actionIcon mr-3" data-toggle="modal" data-toggle="tooltip" data-target="#confirmModal-{{ Maker.id }}" data-placement="top" title="{{ 'admin.common.label.delete'|trans }}">
+                                                    <i class="fa fa-close fa-lg text-secondary"></i>
+                                                </a>
+                                            </div>
+                                        </div>
 
-                </div>
-                <div class="card rounded border-0 mb-4">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-12">
-                                <a id="add-button" class="btn btn-default btn-ec-regular" data-toggle="modal"
-                                   data-target="#add-modal">{{ 'admin.plugin.maker.maker.register'|trans }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    {% if Makers|length > 0 %}
-                        <div class="card-body p-0">
-                            <div class="card rounded border-0 mb-2" id="maker_list">
-                                <ul class="list-group list-group-flush sortable-container">
-                                    {% for Maker in Makers %}
-                                        <li class="list-group-item sortable-item" data-rank="{{ Maker.sort_no }}"
-                                            data-maker-id="{{ Maker.id }}">
-                                            <div class="row justify-content-around mode-view">
-                                                <div class="col-auto d-flex align-items-center">
-                                                    <i class="fa fa-bars text-ec-gray"></i>
-                                                </div>
-                                                <div class="col d-flex">
-                                                    <a class="edit" data-id="{{ Maker.id }}"
-                                                       data-name="{{ Maker.name }}" href="#"
-                                                       data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}">{{ Maker.name }}</a>
-                                                </div>
-                                                <div class="col-auto text-right">
-                                                    <a class="edit" data-id="{{ Maker.id }}"
-                                                       data-name="{{ Maker.name }}" href="#"
-                                                       data-url="{{ url('admin_plugin_maker_index', {id: Maker.id}) }}"
-                                                       data-toggle="tooltip" title="{{ 'common.label.edit'|trans }}">
-                                                        <i class="fa fa-pencil fa-lg text-secondary"
-                                                           aria-hidden="true"></i>
-                                                    </a>
-                                                </div>
-                                                <div class="col-auto text-right">
-                                                    {% set delete_action = url('admin_plugin_maker_delete', {id: Maker.id}) %}
-                                                    <a href="{{ delete_action }}" {{ csrf_token_for_anchor() }}
-                                                       data-method="delete"
-                                                       data-message="{{ 'admin.plugin.maker.delete.confirm'|trans }}"
-                                                       data-toggle="tooltip" title="{{ 'common.label.delete'|trans }}">
-                                                        <i class="fa fa-close fa-lg text-secondary"
-                                                           aria-hidden="true"></i>
-                                                    </a>
+                                        <div class="modal fade" id="confirmModal-{{ Maker.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmModal-{{ Maker.id }}" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title font-weight-bold">{{ 'maker.admin.delete.confirm'|trans }}</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                    </div>
+                                                    <div class="modal-body text-left">
+                                                        <p class="text-left">{{ 'maker.admin.delete.confirm.message'|trans }}</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-ec-sub" type="button" data-dismiss="modal">{{ 'admin.common.label.cancel'|trans }}</button>
+                                                        <a href="{{ url('maker_admin_delete', {'id' : Maker.id}) }}" class="btn btn-ec-delete" data-confirm="false"{{ csrf_token_for_anchor() }} data-method="delete">
+                                                            {{ 'admin.common.label.delete'|trans }}
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                                        </div>
+
+                                        <form class="form-row d-none mode-edit" method="post" action="{{ url('maker_admin_index') }}">
+                                            {{ form_widget(forms[Maker.id]._token) }}
+                                            <div class="col-auto align-items-center">
+                                                {{ form_widget(forms[Maker.id].name, {'attr': {'data-origin-value': forms[Maker.id].name.vars.value }}) }}
+                                                {{ form_errors(forms[Maker.id].name) }}
+                                            </div>
+                                            <div class="col-auto align-items-center">
+                                                <button class="btn btn-ec-conversion" type="submit">{{ 'admin.common.label.ok'|trans }}</button>
+                                            </div>
+                                            <div class="col-auto align-items-center">
+                                                <button class="btn btn-ec-sub action-edit-cancel" type="button">{{ 'admin.common.label.cancel'|trans }}</button>
+                                            </div>
+                                        </form>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
-                    {% else %}
-                        <div class="card-body p-4 no-record">
-                            <div class="text-center text-muted">{{ 'admin.plugin.maker.maker.no_records'|trans }}</div>
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
+                <p>{{ 'maker.admin.drag&drop'|trans }}</p>
             </div>
         </div>
     </div>

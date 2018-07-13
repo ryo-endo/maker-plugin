@@ -11,5 +11,14 @@
  * file that was distributed with this source code.
  */
 
-$loader = require __DIR__.'/../../../../autoload.php';
-$loader->add('Plugin\Maker\Tests', __DIR__);
+namespace Plugin\Maker;
+
+use Eccube\Common\EccubeTwigBlock;
+
+class MakerTwigBlock implements EccubeTwigBlock
+{
+    public static function getTwigBlock()
+    {
+        return ['@Maker/default/maker.twig'];
+    }
+}

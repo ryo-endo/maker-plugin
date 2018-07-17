@@ -1,8 +1,11 @@
 <?php
+
 /*
- * This file is part of the Maker plugin
+ * This file is part of EC-CUBE
  *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,13 +13,15 @@
 
 namespace Plugin\Maker\Controller;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Eccube\Application;
 use Eccube\Controller\AbstractController;
 use Plugin\Maker\Entity\Maker;
+use Plugin\Maker\Form\Type\MakerType;
+use Plugin\Maker\Repository\MakerRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MakerController.
@@ -24,127 +29,151 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MakerController extends AbstractController
 {
     /**
+     * @var MakerRepository
+     */
+    protected $makerRepository;
+
+    /**
+     * MakerController constructor.
+     *
+     * @param MakerRepository $makerRepository
+     */
+    public function __construct(MakerRepository $makerRepository)
+    {
+        $this->makerRepository = $makerRepository;
+    }
+
+    /**
      * List, add, edit maker.
      *
-     * @param Application $app
-     * @param Request     $request
-     * @param null        $id
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     *
+     * @Route("/%eccube_admin_route%/maker", name="maker_admin_index")
+     * @Template("@Maker/admin/maker.twig")
      */
-    public function index(Application $app, Request $request, $id = null)
+    public function index(Request $request)
     {
-        $repos = $app['eccube.plugin.maker.repository.maker'];
-
-        $TargetMaker = new Maker();
-
-        if ($id) {
-            $TargetMaker = $repos->find($id);
-            if (!$TargetMaker) {
-                log_error('The Maker not found!', array('Maker id' => $id));
-                throw new NotFoundHttpException();
-            }
-        }
-
-        $form = $app['form.factory']
-            ->createBuilder('admin_maker', $TargetMaker)
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            log_info('Maker add/edit start.');
-            $status = $repos->save($TargetMaker);
-
-            if ($status) {
-                log_info('Maker add/edit success', array('Maker id' => $TargetMaker->getId()));
-                $app->addSuccess('admin.plugin.maker.save.complete', 'admin');
-
-                return $app->redirect($app->url('admin_plugin_maker_index'));
-            } else {
-                log_info('Maker add/edit fail!', array('Maker id' => $TargetMaker->getId()));
-                $app->addError('admin.plugin.maker.save.error', 'admin');
-            }
-        }
+        $Maker = new Maker();
+        $Makers = $this->makerRepository->findBy([], ['sort_no' => 'DESC']);
 
         /**
-         * @var ArrayCollection $arrMaker
+         * 新規登録フォーム
          */
-        $arrMaker = $app['eccube.plugin.maker.repository.maker']->findBy(array(), array('rank' => 'DESC'));
+        $builder = $this->formFactory->createBuilder(MakerType::class, $Maker);
 
-        return $app->render('Maker/Resource/template/admin/maker.twig', array(
+        $form = $builder->getForm();
+
+        /**
+         * 編集用フォーム
+         */
+        $forms = [];
+        foreach ($Makers as $item) {
+            $id = $item->getId();
+            $forms[$id] = $this->formFactory->createNamed('maker_'.$id, MakerType::class, $item);
+        }
+
+        if ('POST' === $request->getMethod()) {
+            /*
+             * 登録処理
+             */
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->makerRepository->save($form->getData());
+
+                $this->addSuccess('maker.admin.save.complete', 'admin');
+
+                return $this->redirectToRoute('maker_admin_index');
+            }
+
+            /*
+             * 編集処理
+             */
+            foreach ($forms as $editForm) {
+                $editForm->handleRequest($request);
+                if ($editForm->isSubmitted() && $editForm->isValid()) {
+                    $this->makerRepository->save($editForm->getData());
+
+                    $this->addSuccess('maker.admin.save.complete', 'admin');
+
+                    return $this->redirectToRoute('maker_admin_index');
+                }
+            }
+        }
+
+        $formViews = [];
+        foreach ($forms as $key => $value) {
+            $formViews[$key] = $value->createView();
+        }
+
+        return [
             'form' => $form->createView(),
-            'arrMaker' => $arrMaker,
-            'TargetMaker' => $TargetMaker,
-        ));
+            'Makers' => $Makers,
+            'Maker' => $Maker,
+            'forms' => $formViews,
+        ];
     }
 
     /**
      * Delete Maker.
      *
-     * @param Application $app
-     * @param Request     $request
-     * @param int         $id
+     * @param Request $request
+     * @param Maker $Maker
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Method("DELETE")
+     * @Route("/%eccube_admin_route%/maker/{id}/delete", name="maker_admin_delete", requirements={"id":"\d+"})
      */
-    public function delete(Application $app, Request $request, $id = null)
+    public function delete(Request $request, Maker $Maker)
     {
-        // Valid token
-        $this->isTokenValid($app);
+        $this->isTokenValid();
 
-        // Check request
-        if (!'POST' === $request->getMethod()) {
-            log_error('Delete with bad method!');
-            throw new BadRequestHttpException();
+        try {
+            $this->makerRepository->delete($Maker);
+
+            $this->addSuccess('maker.admin.delete.complete', 'admin');
+
+            log_info('メーカー削除完了', ['Maker id' => $Maker->getId()]);
+        } catch (\Exception $e) {
+            log_info('メーカー削除エラー', ['Maker id' => $Maker->getId(), $e]);
+
+            $message = trans('admin.delete.failed.foreign_key', ['%name%' => $Maker->getName()]);
+            $this->addError($message, 'admin');
         }
 
-        // Id valid
-        if (!$id) {
-            log_info('The maker not found!', array('Maker id' => $id));
-            $app->addError('admin.plugin.maker.not_found', 'admin');
-
-            return $app->redirect($app->url('admin_plugin_maker_index'));
-        }
-
-        $repos = $app['eccube.plugin.maker.repository.maker'];
-
-        $TargetMaker = $repos->find($id);
-
-        if (!$TargetMaker) {
-            log_error('The maker not found!', array('Maker id' => $id));
-            throw new NotFoundHttpException();
-        }
-
-        $status = $repos->delete($TargetMaker);
-
-        if ($status === true) {
-            log_info('The maker delete success!', array('Maker id' => $id));
-            $app->addSuccess('admin.plugin.maker.delete.complete', 'admin');
-        } else {
-            log_info('The maker delete fail!', array('Maker id' => $id));
-            $app->addError('admin.plugin.maker.delete.error', 'admin');
-        }
-
-        return $app->redirect($app->url('admin_plugin_maker_index'));
+        return $this->redirectToRoute('maker_admin_index');
     }
 
     /**
-     * Move rank with ajax.
+     * Move sort no with ajax.
      *
-     * @param Application $app
-     * @param Request     $request
+     * @param Request $request
      *
-     * @return bool
+     * @return Response
+     *
+     * @throws \Exception
+     *
+     * @Method("POST")
+     * @Route("/%eccube_admin_route%/maker/move_sort_no", name="maker_admin_move_sort_no")
      */
-    public function moveRank(Application $app, Request $request)
+    public function moveSortNo(Request $request)
     {
-        if ($request->isXmlHttpRequest()) {
-            $arrRank = $request->request->all();
-            $arrMoved = $app['eccube.plugin.maker.repository.maker']->moveMakerRank($arrRank);
-            log_info('Maker move rank', $arrMoved);
+        if ($request->isXmlHttpRequest() && $this->isTokenValid()) {
+            $sortNos = $request->request->all();
+            foreach ($sortNos as $makerId => $sortNo) {
+                $Maker = $this->makerRepository->find($makerId);
+                $Maker->setSortNo($sortNo);
+                $this->entityManager->persist($Maker);
+            }
+            $this->entityManager->flush();
         }
 
-        return true;
+        return new Response();
     }
 }

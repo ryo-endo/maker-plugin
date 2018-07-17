@@ -1,8 +1,11 @@
 <?php
+
 /*
- * This file is part of the Maker plugin
+ * This file is part of EC-CUBE
  *
- * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,11 +17,9 @@ use Eccube\Common\Constant;
 use Eccube\Tests\Web\Admin\AbstractAdminWebTestCase;
 use Faker\Generator;
 use Plugin\Maker\Entity\Maker;
-use Plugin\Maker\Util\Version;
 
 /**
  * Class MakerWebTestCase
- * @package Plugin\Maker\Tests\Web
  */
 class MakerWebCommon extends AbstractAdminWebTestCase
 {
@@ -29,41 +30,45 @@ class MakerWebCommon extends AbstractAdminWebTestCase
      */
     protected function createFormData()
     {
-        /**
-         * @var Generator $faker
-         */
         $faker = $this->getFaker();
-        $form = array(
-            'class' => array(
-                'product_type' => 1,
-                'price01' => $faker->randomNumber(5),
-                'price02' => $faker->randomNumber(5),
+
+        $price01 = $faker->randomNumber(5);
+        if (mt_rand(0, 1)) {
+            $price01 = number_format($price01);
+        }
+
+        $price02 = $faker->randomNumber(5);
+        if (mt_rand(0, 1)) {
+            $price02 = number_format($price02);
+        }
+
+        $form = [
+            'class' => [
+                'sale_type' => 1,
+                'price01' => $price01,
+                'price02' => $price02,
                 'stock' => $faker->randomNumber(3),
                 'stock_unlimited' => 0,
                 'code' => $faker->word,
                 'sale_limit' => null,
-                'delivery_date' => '',
-            ),
+                'delivery_duration' => '',
+            ],
             'name' => $faker->word,
-            'product_image' => null,
-            'description_detail' => $faker->text,
+            'product_image' => [],
+            'description_detail' => $faker->realText,
             'description_list' => $faker->paragraph,
-            'Category' => null,
+            'Category' => 1,
             'Tag' => 1,
             'search_word' => $faker->word,
-            'free_area' => $faker->text,
+            'free_area' => $faker->realText,
             'Status' => 1,
-            'note' => $faker->text,
+            'note' => $faker->realText,
             'tags' => null,
             'images' => null,
             'add_images' => null,
             'delete_images' => null,
-            '_token' => 'dummy',
-        );
-        if (Version::isSupport('3.0.9', '==')) {
-            unset($form['Tag']);
-            $form['tag'] = $faker->word;
-        }
+            Constant::TOKEN_NAME => 'dummy',
+        ];
 
         return $form;
     }
@@ -71,28 +76,27 @@ class MakerWebCommon extends AbstractAdminWebTestCase
     /**
      * Create maker
      *
-     * @param int $rank
+     * @param int $sortNo
      *
      * @return Maker
      */
-    protected function createMaker($rank = null)
+    protected function createMaker($sortNo = null)
     {
         /**
-         * @var Generator $faker
+         * @var Generator
          */
         $faker = $this->getFaker();
 
-        if (!$rank) {
-            $rank = $faker->randomNumber(3);
+        if (!$sortNo) {
+            $sortNo = $faker->randomNumber(3);
         }
 
         $Maker = new Maker();
         $Maker->setName($faker->word);
-        $Maker->setRank($rank);
-        $Maker->setDelFlg(Constant::DISABLED);
+        $Maker->setSortNo($sortNo);
 
-        $this->app['orm.em']->persist($Maker);
-        $this->app['orm.em']->flush($Maker);
+        $this->entityManager->persist($Maker);
+        $this->entityManager->flush();
 
         return $Maker;
     }

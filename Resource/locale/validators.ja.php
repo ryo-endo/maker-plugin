@@ -11,5 +11,6 @@
  * file that was distributed with this source code.
  */
 
-$loader = require __DIR__.'/../../../../autoload.php';
-$loader->add('Plugin\Maker\Tests', __DIR__);
+return [
+    'maker.admin.blank.error' => 'メーカー名が入力されていません。',
+];
